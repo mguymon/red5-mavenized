@@ -1,0 +1,3 @@
+Red5 is an open source Flash Server written in Java (http://osflash.org/red5)
+
+I have taken the 0.8 rc1 codebase (http://red5.googlecode.com/svn/java/server/tags/0_8rc1/), seperated pieces into logical components, and apply the maven software project management tool.
