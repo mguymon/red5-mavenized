@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xmlns:lang="http://www.springframework.org/schema/lang" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd                            http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd">
+
+<!-- JMX server -->
+	<bean id="jmxFactory" class="org.red5.server.jmx.JMXFactory">
+		<property name="domain" value="org.red5.server"/>
+	</bean>
+	<bean id="jmxAgent" class="org.red5.server.jmx.JMXAgent" init-method="init">
+		<!-- The RMI adapter allows remote connections to the MBeanServer -->
+		<property name="enableRmiAdapter" value="true"/>
+		<property name="rmiAdapterPort" value="${jmx.rmi.port.registry}"/>
+		<property name="rmiAdapterRemotePort" value="${jmx.rmi.port.remoteobjects}"/>
+		<property name="rmiAdapterHost" value="${jmx.rmi.host}"/>
+		<property name="enableSsl" value="${jmx.rmi.ssl}"/>
+		<!-- Starts a registry if it doesnt exist -->
+		<property name="startRegistry" value="true"/>
+		<!-- Authentication -->
+		<property name="remoteAccessProperties" value="${red5.config_root}/access.properties"/>
+		<property name="remotePasswordProperties" value="${red5.config_root}/password.properties"/>
+		<property name="remoteSSLKeystore" value="${red5.config_root}/keystore.jmx"/>
+		<property name="remoteSSLKeystorePass" value="${rtmps.keystorepass}"/>
+		<!-- The HTML adapter allows connections to the MBeanServer via a web browser -->
+		<property name="enableHtmlAdapter" value="${jmx.http}"/>
+		<property name="htmlAdapterPort" value="${jmx.http.port}"/>
+		<!-- Mina offers its own Mbeans so you may integrate them here -->
+		<property name="enableMinaMonitor" value="true"/>
+	</bean>
+</beans>

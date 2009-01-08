@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%date [%thread] %-5level %logger{35} - %msg%n</Pattern> 
+	    </layout>
+	</appender>
+	
+	<!-- Example file output, do not forget to enable it in the <root> as well
+	<appender name="SAMPLE_FILE" 
+		class="ch.qos.logback.core.rolling.RollingFileAppender"> 
+		<File>log/sample.log</File>
+		<rollingPolicy 
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
+			<FileNamePattern>log/SAMPLE.%d{yyyy-MM-dd}.log.gz</FileNamePattern> 
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout"> 
+			<Pattern>%date [%thread] %-5level %logger{35} - %msg%n</Pattern> 
+		</layout> 
+	</appender> 
+	 -->
+	 
+	<root>
+		<level value="WARN" />
+	    <appender-ref ref="STDOUT" />
+	    <!-- 
+	    <appender-ref ref="SAMPLE_FILE" />
+	    -->
+	</root>
+	
+	<logger name="com.igicom.sample">
+		<level value="DEBUG" />
+	</logger>
+	
+	<logger name="org.red5">
+		<level value="INFO" />
+	</logger>
+	
+</configuration>
