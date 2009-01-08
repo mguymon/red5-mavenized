@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>${groupId}</groupId>
-  	<artifactId>${artifactId}</artifactId>
+	<groupId>org.red5</groupId>
+  	<artifactId>red5-base</artifactId>
 	<packaging>jar</packaging>
-	<version>${version}</version>
+	<version>0.8rc1-SNAPSHOT</version>
 	<name>red5-base</name>
 	<url>http://github.com/mguymon/red5-mavenized/tree/master</url>
 	<repositories>
@@ -19,6 +19,14 @@
 			<url>http://maven.geotools.fr/repository</url>
 		</repository>
 	</repositories>
+	<distributionManagement>
+	    <snapshotRepository>
+			<id>slackworks.snapshot</id>
+			<name>Slackworks Snapshot Repository</name>
+			<url>scp://sprocket.slackworks.com/srv/www/m2-snapshot/</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+    </distributionManagement>
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>

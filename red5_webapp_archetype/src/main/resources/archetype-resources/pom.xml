@@ -9,9 +9,9 @@
 	<url>http://maven.apache.org</url>
 	<repositories>
 		<repository>
-			<id>Codehaus</id>
-			<name>Codehaus Repo</name>
-			<url>http://repository.codehaus.org</url>
+			<id>Slackworks</id>
+			<name>Slackworks Repo</name>
+			<url>http://sprocket.slackworks.com/m2-snapshot</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>

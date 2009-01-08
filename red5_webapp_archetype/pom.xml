@@ -1,8 +1,17 @@
 <project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.igicom.com</groupId>
-  <artifactId>red5-webapp</artifactId>
-  <version>0.8rc1</version>
-  <packaging>jar</packaging>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.slackworks</groupId>
+	<artifactId>red5-webapp</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>slackworks.snapshot</id>
+			<name>Slackworks Snapshot Repository</name>
+			<url>scp://sprocket.slackworks.com/srv/www/m2-snapshot/</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
 
