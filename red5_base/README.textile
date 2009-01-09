@@ -1,0 +1,38 @@
+h2.Red5 Base - Mavenized
+
+The "mavenized":"Maven":http://maven.apache.org "Red5 Flash Server":http://osflash.org/red5 version 0.8rc1. 
+This module contains all the base classes and resources required to run an instance of Red5.
+
+h3.Using dependency
+
+To enable Red5 support in a maven project, just add the follow dependency:
+<pre>
+	<code>
+	   <dependency>
+			<groupId>org.red5</groupId>
+			<artifactId>red5-base</artifactId>
+			<version>0.8rc1-SNAPSHOT</version>
+		</dependency>
+	</code>
+</pre>
+
+
+Slackworks Snapshot Repository for settings.xml
+
+<pre>
+	<code>
+		<repositories>
+		    <repository>
+		        <id>slackworks.snapshot</id>
+		        <name>Slackworks Snapshot Repo</name>
+		        <url>http://sprocket.slackworks.com/m2-snapshot</url>
+		        <releases>
+		            <enabled>false</enabled>
+		        </releases>
+		        <snapshots>
+		            <enabled>true</enabled>
+		        </snapshots>
+		    </repository>
+		</repositories>
+	</code>
+</pre>
