@@ -25,7 +25,7 @@ _groupId_ and _artifactId_. The _archetypeRepository_ is important, since the ar
 h3. A quick test
 
 Using the "Maven Cargo plugin":http://cargo.codehaus.org/Maven2+plugin we can package and run the webapp in a single
-maven command. 
+maven command.  This while take a moment the first time it is run, as Apache Tomcat 5.5 is downloaded.
 <pre>
 	<code>
 		mvn package cargo:start
