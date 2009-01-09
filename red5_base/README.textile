@@ -1,11 +1,11 @@
-h2.Red5 Base - Mavenized
+h2. Red5 Base - Mavenized
 
 The "mavenized":"Maven":http://maven.apache.org "Red5 Flash Server":http://osflash.org/red5 version 0.8rc1. 
 This module contains all the base classes and resources required to run an instance of Red5.
 
-h3.Using dependency
+h3. Using dependency
 
-To enable Red5 support in a maven project, just add the follow dependency:
+To enable Red5 support in a maven project, just add the follow dependency to the pom.xml:
 <pre>
 	<code>
 	   <dependency>
@@ -16,6 +16,43 @@ To enable Red5 support in a maven project, just add the follow dependency:
 	</code>
 </pre>
 
+The Red5 Base does not configure an RTMP transport by default, it must be configured. The following below is an example 
+Spring configuration that would created a RMTP transport running on port 1935 for the contextPath /sample.
+
+<pre>
+	<code>
+	    <!-- RTMP Mina Transport -->
+		<bean id="rtmpTransport" class="org.red5.server.net.rtmp.RTMPMinaTransport" init-method="start" destroy-method="stop">
+			<property name="ioHandler" ref="rtmpMinaIoHandler" />
+			<property name="address" value="0.0.0.0" />
+			<property name="port" value="1935" />
+			<property name="receiveBufferSize" value="65536" />
+			<property name="sendBufferSize" value="271360" />
+			<property name="eventThreadsCore" value="16" />
+			<property name="eventThreadsMax" value="64" />
+			<property name="eventThreadsQueue" value="0" />
+			<property name="eventThreadsKeepalive" value="60" />
+			<property name="jmxPollInterval" value="1000" />
+			<property name="tcpNoDelay" value="true" />
+		</bean>
+	
+		<!-- Red5 Context -->
+		<bean id="webapp.context" class="org.red5.server.Context" autowire="byType" />
+		
+		<!-- Red5 Web Scope -->
+		<bean id="webapp.scope" class="org.red5.server.WebScope" init-method="register">
+			<property name="server" ref="red5.server" />
+			<property name="parent" ref="global.scope" />
+			<property name="context" ref="webapp.context" />
+			<property name="handler" ref="webapp.handler" />
+			<property name="contextPath" value="/sample" />
+			<property name="virtualHosts" value="*,localhost, localhost:5080, 127.0.0.1:5080" />
+		</bean>
+		
+		<!-- Red5 Application -->
+		<bean id="webapp.handler" class="com.slackworks.SampleApp" />
+	</code>
+</pre>
 
 Slackworks Snapshot Repository for settings.xml
 
