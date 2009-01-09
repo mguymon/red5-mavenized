@@ -1,0 +1,45 @@
+h2. Red5 Webapp Archetype -- Mavenized
+
+This is a "Maven Archetype":http://maven.apache.org/guides/introduction/introduction-to-archetypes.html that can be used
+as an easy starting point for building a Red5 enabled webapp.
+
+
+h3. Creating a new project
+
+The following command will create a new maven project with all the defaults for Red5
+
+<pre>
+	<code>
+		mvn archetype:create                                    \
+		  -DarchetypeGroupId=com.slackworks                     \
+		  -DarchetypeArtifactId=red5-webapp                     \ 
+		  -DarchetypeVersion=0.1-SNAPSHOT                       \
+		  -DgroupId=*<my.groupid>*                              \
+		  -DartifactId=*<my-artifactId>*   
+	</code>
+</pre>
+
+h3. I cannot find com.slackworks.red5-webapp in any repository?!
+
+Presently, this only exists on the Slackworks Snapshot repository, which can be used by adding the following
+to your maven settings.xml
+
+<pre>
+	<code>
+		<repositories>
+		    <repository>
+		        <id>slackworks.snapshot</id>
+		        <name>Slackworks Snapshot Repo</name>
+		        <url>http://sprocket.slackworks.com/m2-snapshot</url>
+		        <releases>
+		            <enabled>false</enabled>
+		        </releases>
+		        <snapshots>
+		            <enabled>true</enabled>
+		        </snapshots>
+		    </repository>
+		</repositories>
+	</code>
+</pre>
+
+
