@@ -6,7 +6,8 @@ as an easy starting point for building a Red5 enabled webapp.
 
 h3. Creating a new project
 
-The following command will create a new maven project with all the defaults for Red5
+The following command will create a new maven project with all the defaults for Red5. Make sure you set your projects
+groupId and artifactId. The archetypeRepository is important, since the archetype is only on the Slackworks repository.
 
 <pre>
 	<code>
@@ -15,31 +16,22 @@ The following command will create a new maven project with all the defaults for 
 		  -DarchetypeArtifactId=red5-webapp                     \ 
 		  -DarchetypeVersion=0.1-SNAPSHOT                       \
 		  -DgroupId=*<my.groupid>*                              \
-		  -DartifactId=*<my-artifactId>*   
+		  -DartifactId=*<my-artifactId>*                        \
+		  -DarchetypeRepository=http://sprocket.slackworks.com/m2-snapshot
 	</code>
 </pre>
 
-h3. I cannot find com.slackworks.red5-webapp in any repository?!
 
-Presently, this only exists on the Slackworks Snapshot repository, which can be used by adding the following
-to your maven settings.xml
+h3. A quick test
 
+Using the "Maven Cargo plugin":http://cargo.codehaus.org/Maven2+plugin we can package and run the webapp in a single
+maven command. 
 <pre>
-	<code>
-		<repositories>
-		    <repository>
-		        <id>slackworks.snapshot</id>
-		        <name>Slackworks Snapshot Repo</name>
-		        <url>http://sprocket.slackworks.com/m2-snapshot</url>
-		        <releases>
-		            <enabled>false</enabled>
-		        </releases>
-		        <snapshots>
-		            <enabled>true</enabled>
-		        </snapshots>
-		    </repository>
-		</repositories>
-	</code>
+	<core>
+		mvn package cargo:start
+	</core>
 </pre>
 
+Now just go to "http://localhost:8080/sample/":http://localhost:8080/sample/ and you should be able to marvel at
+you success.
 
