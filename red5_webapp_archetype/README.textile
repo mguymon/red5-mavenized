@@ -1,4 +1,4 @@
-h2. Red5 Webapp Archetype -- Mavenized
+h2. Red5 Webapp Archetype - Mavenized
 
 This is a "Maven Archetype":http://maven.apache.org/guides/introduction/introduction-to-archetypes.html that can be used
 as an easy starting point for building a Red5 enabled webapp.
