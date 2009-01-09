@@ -1,9 +1,9 @@
 h2. Red5 Base - Mavenized
 
-The "mavenized":"Maven":http://maven.apache.org "Red5 Flash Server":http://osflash.org/red5 version 0.8rc1. 
+A "mavenized":http://maven.apache.org component of the "Red5 Flash Server":http://osflash.org/red5 version 0.8rc1. 
 This module contains all the base classes and resources required to run an instance of Red5.
 
-h3. Using dependency
+h3. Using the red5-base dependency
 
 To enable Red5 support in a maven project, just add the follow dependency to the pom.xml:
 <pre>
@@ -16,8 +16,14 @@ To enable Red5 support in a maven project, just add the follow dependency to the
 	</code>
 </pre>
 
+h3. Getting the red5-base working
+
+Red5 is wired together using "Spring":http://www.springsource.org/, the red5-base Spring Contexts are red5.xml, 
+red5-core.xml, red5-common.xml, and red5-default.xml. These contexts will need to be loaded for the Red5 Server
+to function properly.
+
 The Red5 Base does not configure an RTMP transport by default, it must be configured. The following below is an example 
-Spring configuration that would created a RMTP transport running on port 1935 for the contextPath /sample.
+Spring beans that would created a RMTP transport running on port 1935 for the contextPath /sample.
 
 <pre>
 	<code>
@@ -54,7 +60,23 @@ Spring configuration that would created a RMTP transport running on port 1935 fo
 	</code>
 </pre>
 
-Slackworks Snapshot Repository for settings.xml
+For the above example to work, the *red5-core.xml* must be loaded first, since it relies on the _rtmpMinaIoHandler_ bean.
+Below is an example of loading all of the Red5 Spring Contexts first, then the application from a web.xml:
+
+<pre>
+	<code>
+		<context-param>
+		    <param-name>contextConfigLocation</param-name>
+		    <param-value>classpath:red5-*.xml,classpath:exampleContext.xml,</param-value>
+		</context-param>
+	</code>
+</pre>
+
+
+h3. I cannot find red5-base in any repository?!
+
+Presently, this only exists on the Slackworks Snapshot repository, which can be used by adding the following
+to your maven settings.xml
 
 <pre>
 	<code>
