@@ -1,3 +1,34 @@
-Red5 is an open source Flash Server written in Java (http://osflash.org/red5)
+h2. Red5 -- Mavenized
 
-I have taken the 0.8 rc1 codebase (http://red5.googlecode.com/svn/java/server/tags/0_8rc1/), seperated pieces into logical components, and apply the maven software project management tool.
+A "mavenized":http://maven.apache.org component of the "Red5 Flash Server":http://osflash.org/red5 version 0.8rc1. 
+Parts of Red5 have been separated into logical modules:
+
+  * red5-base: contains all the core classes and resources
+  * red5-jetty: contains classes and resources to run Red5 in a standalone Jetty server
+  * red5-jmx: contains classes and resources for JMX support
+  * red5-scripting: contains classes and resources for scripting support
+  * red5-tomcat: contains classes and resources to run Red5 in a standalone Tomcat server
+  * red5-webapp-archetype: the Maven archetype that contains the defaults for making a Red5 enabled war
+  
+h3. Where can I find a Maven repository with all this fun stuff?
+
+Presently, this only exists on the Slackworks Snapshot repository, which can be used by adding the following
+to your maven settings.xml
+
+<pre>
+	<code>
+		<repositories>
+		    <repository>
+		        <id>slackworks.snapshot</id>
+		        <name>Slackworks Snapshot Repo</name>
+		        <url>http://sprocket.slackworks.com/m2-snapshot</url>
+		        <releases>
+		            <enabled>false</enabled>
+		        </releases>
+		        <snapshots>
+		            <enabled>true</enabled>
+		        </snapshots>
+		    </repository>
+		</repositories>
+	</code>
+</pre>
