@@ -6,8 +6,8 @@ as an easy starting point for building a Red5 enabled webapp.
 
 h3. Creating a new project
 
-The following command will create a new maven project with all the defaults for Red5. Make sure you set your projects
-groupId and artifactId. The archetypeRepository is important, since the archetype is only on the Slackworks repository.
+The following command will create a new Maven project with all the defaults for Red5. Make sure you set your projects
+_groupId_ and _artifactId_. The _archetypeRepository_ is important, since the archetype is only on the Slackworks repository.
 
 <pre>
 	<code>
@@ -32,6 +32,6 @@ maven command.
 	</code>
 </pre>
 
-Now just go to "http://localhost:8080/sample/":http://localhost:8080/sample/ and you should be able to marvel at
+Now just go to "http://localhost:8080/sample/":http://localhost:8080/sample/ and your should be able to marvel at
 you success.
 
