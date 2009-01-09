@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.access.ContextSingletonBeanFactoryLocator;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Entry point from which the server config file is loaded.
@@ -38,7 +39,7 @@ import org.springframework.context.access.ContextSingletonBeanFactoryLocator;
  */
 public class Standalone {
 
-	protected static String red5Config = "red5.xml";
+	protected static String red5Config = "classpath:red5.xml";
 
 	//public static DebugPooledByteBufferAllocator allocator;
 
@@ -93,59 +94,11 @@ public class Standalone {
 		log.info("{} (http://www.osflash.org/red5)", Red5.getVersion());
 		log.info("Loading Red5 global context from: {}", red5Config);
 
-		String classpath = System.getProperty("java.class.path");
-        // look for root system property prior to search
-        String root = System.getProperty("red5.root");
-        String conf;
-        if (root != null) {
-            if (System.getProperty("file.separator").equals("\\")) {
-                root = root.replace('\\', '/');
-            }
-            conf = root + "/conf";
-        } else {
-    		// Detect root of Red5 configuration and set as system property
-    		File fp = new File(red5Config);
-    		fp = fp.getCanonicalFile();
-    		if (!fp.isFile()) {
-    			// Given file does not exist, search it on the classpath
-    			String[] paths = classpath.split(System
-    					.getProperty("path.separator"));
-    			for (String element : paths) {
-    				fp = new File(element + System.getProperty("file.separator") + red5Config);
-    				fp = fp.getCanonicalFile();
-    				if (fp.isFile()) {
-    					break;
-    				}
-    			}
-    		}
-    
-    		if (!fp.isFile()) {
-    			throw new Exception("could not find configuration file "
-    					+ red5Config + " on your classpath " + classpath);
-    		}
-    
-		System.setProperty("red5.conf_file", red5Config);
-    		root = fp.getAbsolutePath();
-    		root = root.replace('\\', '/');
-    		int idx = root.lastIndexOf('/');
-    		conf = root.substring(0, idx);
-
-    		idx = conf.lastIndexOf('/');
-    		root = conf.substring(0, idx);
-
-    	}
-		// Set Red5 root as environment variable
-		System.setProperty("red5.root", root);
-		log.info("Setting Red5 root to {}", root);
-
-		System.setProperty("red5.config_root", conf);
-		log.info("Setting configuation root to {}", conf);                    
-
 		// Setup system properties so they can be evaluated by Jetty
 		Properties props = new Properties();
 
         // Load properties
-        props.load(new FileInputStream(conf + "/red5.properties"));
+		props.load( Standalone.class.getResourceAsStream( "/red5.properties" ) );
 
         for (Object o : props.keySet()) {
             String key = (String) o;
@@ -160,7 +113,8 @@ public class Standalone {
 		} catch (Exception e) {
 			// Don't raise wrapped exceptions as their stacktraces may confuse
 			// people...
-			raiseOriginalException(e);
+			//raiseOriginalException(e);
+			e.printStackTrace();
 		} finally {
 			long t2 = System.nanoTime();
 			log.info("Startup done in: {} ms", ((t2 - t1) / 1000000));

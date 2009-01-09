@@ -15,8 +15,8 @@ public class HMACTest {
 		HMAC h1 = new HMAC();
 
 		try {
-			Provider sp = new com.sun.crypto.provider.SunJCE();
-			Security.addProvider(sp);
+			//Provider sp = new com.sun.crypto.provider.SunJCE();
+			//Security.addProvider(sp);
 		} catch (Exception e) {
 			HMAC.message("Problem loading crypto provider", e);
 			fail( "Problem loading crypto provider: " + e.toString() );			

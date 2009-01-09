@@ -1,37 +1,27 @@
 h2. Red5 Webapp Archetype - Mavenized
 
-This is a "Maven Archetype":http://maven.apache.org/guides/introduction/introduction-to-archetypes.html that can be used
-as an easy starting point for building a Red5 enabled webapp.
+A "mavenized":http://maven.apache.org component of the "Red5 Flash Server":http://osflash.org/red5 version 0.8rc1. 
+This module contains all the base classes and resources required to run a standalone Apache Tomcat server with Red5
 
+. . . if it worked
 
-h3. Creating a new project
+h3. Building the mega jar
 
-The following command will create a new Maven project with all the defaults for Red5. Make sure you set your projects
-_groupId_ and _artifactId_. The _archetypeRepository_ is important, since the archetype is only on the Slackworks repository.
+Maven will assemble all the dependency jars and create an executable jar using the follow command:
 
 <pre>
 	<code>
-		mvn archetype:create                                    \
-		  -DarchetypeGroupId=com.slackworks                     \
-		  -DarchetypeArtifactId=red5-webapp                     \ 
-		  -DarchetypeVersion=0.1-SNAPSHOT                       \
-		  -DgroupId=*<my.groupid>*                              \
-		  -DartifactId=*<my-artifactId>*                        \
-		  -DarchetypeRepository=http://sprocket.slackworks.com/m2-snapshot
+		 mvn package assembly:assembly
 	</code>
 </pre>
 
+This will produce the extremely verbose file name _target/red5-tomcat-jar-with-dependencies.jar_, which can
+be executed via:
 
-h3. A quick test
-
-Using the "Maven Cargo plugin":http://cargo.codehaus.org/Maven2+plugin we can package and run the webapp in a single
-maven command.  This while take a moment the first time it is run, as Apache Tomcat 5.5 is downloaded.
 <pre>
 	<code>
-		mvn package cargo:start
+		 java -jar target/red5-tomcat-jar-with-dependencies.jar
 	</code>
 </pre>
 
-Now just go to "http://localhost:8080/sample/":http://localhost:8080/sample/ and your should be able to marvel at
-you success.
-
+ . . if it worked
