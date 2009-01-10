@@ -31,5 +31,5 @@ maven command.  This while take a moment the first time it is run, as Apache Tom
 	</code>
 </pre>
 
-Now just go to "http://localhost:8080/sample/":http://localhost:8080/sample/ and your should be able to marvel at
-you success.
+Now just go to "http://localhost:8080/sample/":http://localhost:8080/sample/ and you should be able to marvel at
+your success.
