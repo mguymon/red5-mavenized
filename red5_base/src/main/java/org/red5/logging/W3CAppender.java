@@ -262,11 +262,11 @@ public class W3CAppender extends FileAppender<LoggingEvent> {
 		
 		sbuf.append("\n");
 		//System.out.println(sbuf.toString());
-		
 		try {
-			this.writer.write(sbuf.toString());
-			if (this.immediateFlush) {
-				this.writer.flush();
+			if (this.getImmediateFlush()) {
+				this.writerWrite(sbuf.toString(), true);
+			} else { 
+				this.writerWrite(sbuf.toString(), false);
 			}
 		} catch (IOException ioe) {
 			addStatus(new ErrorStatus("IO failure in appender", this, ioe));

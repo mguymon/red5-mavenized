@@ -33,12 +33,14 @@ public class ContextLoggingListener implements ServletContextListener {
 		String contextName = pathToName(event);
 		System.out.printf("About to detach context named %s\n", contextName);
 
-		ContextSelector selector = StaticLoggerBinder.SINGLETON.getContextSelector();
+		ContextSelector selector = StaticLoggerBinder.getSingleton().getContextSelector();
 		LoggerContext context = selector.detachLoggerContext(contextName);
 		if (context != null) {
 			Logger logger = context.getLogger(LoggerContext.ROOT_NAME);
 			logger.info("Shutting down context {}", contextName);
-			context.shutdownAndReset();
+			//context.shutdownAndReset();
+			context.reset();
+			context.stop();
 		} else {
 			System.err.printf("No context named %s was found", contextName);
 		}
@@ -53,7 +55,7 @@ public class ContextLoggingListener implements ServletContextListener {
 		LoggingContextSelector selector = null;
 		
 		try {
-			selector = (LoggingContextSelector) StaticLoggerBinder.SINGLETON.getContextSelector();
+			selector = (LoggingContextSelector) StaticLoggerBinder.getSingleton().getContextSelector();
 			//set this contexts name
 			selector.setContextName(contextName);
 

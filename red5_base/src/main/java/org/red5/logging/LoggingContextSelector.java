@@ -76,7 +76,9 @@ public class LoggingContextSelector implements ContextSelector {
 				if (url != null) {
 					try {
 						JoranConfigurator configurator = new JoranConfigurator();
-						loggerContext.shutdownAndReset();
+						//loggerContext.shutdownAndReset();
+						loggerContext.reset();
+						loggerContext.stop();
 						configurator.setContext(loggerContext);
 						configurator.doConfigure(url);
 					} catch (JoranException e) {

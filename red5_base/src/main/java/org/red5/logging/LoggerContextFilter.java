@@ -45,7 +45,7 @@ public class LoggerContextFilter implements Filter {
 		
 		System.out.printf("Context name: %s\n", contextName);
 		
-		LoggingContextSelector selector = (LoggingContextSelector) StaticLoggerBinder.SINGLETON.getContextSelector();
+		LoggingContextSelector selector = (LoggingContextSelector) StaticLoggerBinder.getSingleton().getContextSelector();
 		System.out.printf("Context select type: %s\n", selector.getClass().getName());
 		
 		LoggerContext ctx = selector.getLoggerContext(contextName);

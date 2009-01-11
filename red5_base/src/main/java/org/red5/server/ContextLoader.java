@@ -170,19 +170,22 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 	public void loadContext(String name, String config) {
 			log.debug("Load context - name: {} config: {}", name, config);
 			//check the existence of the config file
-			try {
-				File configFile = new File(config);
-				if (!configFile.exists()) {
-					log.warn("Config file was not found at: {}", configFile.getCanonicalPath());
-					configFile = new File("file://" + config);
+			
+			if ( !config.startsWith( "classpath:" ) ) {
+				try {
+					File configFile = new File(config);
 					if (!configFile.exists()) {
-						log.warn("Config file was not found at either: {}", configFile.getCanonicalPath());
-					} else {
-						config = "file://" + config;
+						log.warn("Config file was not found at: {}", configFile.getCanonicalPath());
+						configFile = new File("file://" + config);
+						if (!configFile.exists()) {
+							log.warn("Config file was not found at either: {}", configFile.getCanonicalPath());
+						} else {
+							config = "file://" + config;
+						}
 					}
+				} catch (IOException e) {
+					log.error("Error looking for config file", e);
 				}
-			} catch (IOException e) {
-				log.error("Error looking for config file", e);
 			}
 			// add the context to the parent, this will be red5.xml
 			ConfigurableBeanFactory factory = ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
@@ -200,13 +203,7 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 				parentContext = (ApplicationContext) factory.getBean("red5.common");
 			}
 			
-			ApplicationContext context = null;
-			if ( config.startsWith( "classpath:" ) ) {
-				context = new ClassPathXmlApplicationContext(
-						new String[] { config }, parentContext);
-			} else { 
-			
-				if (config.startsWith("/"))
+			if (config.startsWith("/"))
 				{
 					// Spring always interprets files as relative, so
 					// will strip a leading slash unless we tell
@@ -218,9 +215,9 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 					log.debug("Resetting {} to {}", config, newConfig);
 					config = newConfig;
 				}
-				context = new FileSystemXmlApplicationContext(
+			ApplicationContext context = new FileSystemXmlApplicationContext(
 						new String[] { config }, parentContext);
-			}
+			
 			log.debug("Adding to context map - name: {} context: {}", name, context);
 			contextMap.put(name, context);
 			// Register context in parent bean factory

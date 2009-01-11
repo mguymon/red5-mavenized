@@ -242,7 +242,7 @@ public class Bootstrap {
 			//classloader
 			Logger log = LoggerFactory.getLogger(Bootstrap.class);
 			//see which logger binder has been instanced
-			log.debug("Logger binder: {}", StaticLoggerBinder.SINGLETON.getClass().getName());
+			log.debug("Logger binder: {}", StaticLoggerBinder.getSingleton().getClass().getName());
 			//set default for loading classes with url loader
 			loader.setDefaultAssertionStatus(false);
 			//create a logger before anything else happens
