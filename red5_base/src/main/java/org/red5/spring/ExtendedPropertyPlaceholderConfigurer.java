@@ -15,8 +15,12 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.Resource;
 
 /**
+ * An extension of {@link PropertyPlaceholderConfigurer}. Provides wildcard lookups using {@link #setWildcardLocations(String[])},
+ * using {@link PathMatchingResourcePatternResolver} for matching locations. Additional global properties can manually
+ * be added using {@link #addPlaceholderProperty(String, String), but must happen *before* the being loaded into a 
+ * {@link ApplicationContext}. 
  * 
- * @author Michael Guymon
+ * @author Michael Guymon (michael.guymon@gmail.com)
  *
  */
 public class ExtendedPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
@@ -38,16 +42,23 @@ public class ExtendedPropertyPlaceholderConfigurer extends PropertyPlaceholderCo
 		super.processProperties( beanFactoryToProcess, props );
 	}
 	
+	/**
+	 * Merged {@link Properties} 
+	 * 
+	 * @return {@link Properties}
+	 */
 	public Properties getProperties() {
 		return properties;
 	}
 	
 	/**
+	 * String[] of locations of properties that are converted to Resources[] using
+	 * using {@link PathMatchingResourcePatternResolver}
 	 * 
-	 * @param locations
+	 * @param locations String[]
 	 * @throws IOException
 	 */
-	public void setWildcardLocations( String locations[] ) throws IOException {
+	public void setWildcardLocations( String[] locations ) throws IOException {
 		
 		List<Resource> resources = new ArrayList<Resource>();
 		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver( this.getClass().getClassLoader() );
@@ -73,17 +84,19 @@ public class ExtendedPropertyPlaceholderConfigurer extends PropertyPlaceholderCo
 	}
 	
 	/**
+	 * Add a property to be merged
 	 * 
-	 * @param key
-	 * @param val
+	 * @param key String
+	 * @param val String
 	 */
 	public static synchronized void addPlaceholderProperty( String key, String val ) {
 		manualPlaceholderProperties.setProperty( key, val );
 	}
 	
 	/**
+	 * Copy of the manual properties
 	 * 
-	 * @return
+	 * @return {@link Properties}
 	 */
 	private static synchronized Properties copyOfManualProperties() {
 		// return new Properties( runtimeProperties ); returns an empty prop ??
