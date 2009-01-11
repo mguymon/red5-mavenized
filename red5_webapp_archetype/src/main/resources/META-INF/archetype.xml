@@ -15,5 +15,6 @@
     <resource>src/main/webapp/WEB-INF/web.xml</resource>
     <resource>src/main/resources/logback.xml</resource>
     <resource>src/main/resources/red5-webapp.xml</resource>
+    <resource>src/main/resources/red5-webapp.properties</resource>
   </resources>
 </archetype>

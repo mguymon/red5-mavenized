@@ -4,23 +4,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
                           http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd">
 
-	<!-- RTMP Mina Transport -->
-	<bean id="rtmpTransport" class="org.red5.server.net.rtmp.RTMPMinaTransport" init-method="start" destroy-method="stop">
-		<property name="ioHandler" ref="rtmpMinaIoHandler" />
-		<property name="address" value="0.0.0.0" />
-		<property name="port" value="1935" />
-		<property name="receiveBufferSize" value="65536" />
-		<property name="sendBufferSize" value="271360" />
-		<property name="eventThreadsCore" value="16" />
-		<property name="eventThreadsMax" value="64" />
-		<property name="eventThreadsQueue" value="0" />
-		<property name="eventThreadsKeepalive" value="60" />
-		<!-- This is the interval at which the sessions are polled for stats. If mina monitoring is not
-				enabled, polling will not occur. -->
-		<property name="jmxPollInterval" value="1000" />
-		<property name="tcpNoDelay" value="true" />
-	</bean>
-
 	<!-- Red5 Context -->
 	<bean id="webapp.context" class="org.red5.server.Context" autowire="byType" />
 	

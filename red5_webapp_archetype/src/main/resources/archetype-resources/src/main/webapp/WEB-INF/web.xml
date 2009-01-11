@@ -14,7 +14,7 @@
 
 	<context-param>
 	    <param-name>contextConfigLocation</param-name>
-	    <param-value>classpath:red5-core.xml,classpath:red5-*.xml</param-value>
+	    <param-value>classpath:red5-webapp.xml</param-value>
 	</context-param>
 
 	<context-param>
