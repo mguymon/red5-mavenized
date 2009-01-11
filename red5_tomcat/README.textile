@@ -1,9 +1,7 @@
 h2. Red5 Webapp Archetype - Mavenized
 
 A "mavenized":http://maven.apache.org component of the "Red5 Flash Server":http://osflash.org/red5 version 0.8rc1. 
-This module contains all the base classes and resources required to run a standalone Apache Tomcat 5.5 server with Red5
-
-. . . if it worked
+This module contains all the base classes and resources required to run a standalone Apache Tomcat 6 server with Red5
 
 h3. Building the mega jar
 
@@ -11,7 +9,7 @@ Maven will assemble all the dependency jars and create an executable jar using t
 
 <pre>
 	<code>
-		 mvn package assembly:assembly
+		 mvn assembly:assembly
 	</code>
 </pre>
 
@@ -23,5 +21,3 @@ be executed via:
 		 java -jar target/red5-tomcat-jar-with-dependencies.jar
 	</code>
 </pre>
-
- . . if it worked
