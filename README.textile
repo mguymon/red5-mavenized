@@ -8,6 +8,10 @@ A "Mavenization":http://maven.apache.org of the "Red5 Flash Server":http://osfla
   * red5-scripting: contains classes and resources for scripting support
   * red5-tomcat: contains classes and resources to run Red5 in a standalone Tomcat server
   * red5-webapp-archetype: the Maven archetype that contains the defaults for making a Red5 enabled war
+
+h3. Deviations from Red5 0.8rc1
+
+"http://wiki.github.com/mguymon/red5-mavenized/home":http://wiki.github.com/mguymon/red5-mavenized/home
   
 h3. Where can I find a Maven repository with all this fun stuff?
 
