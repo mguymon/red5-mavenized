@@ -19,8 +19,13 @@
 	</bean>
 	
 	<bean id="placeholderConfig"
-		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location" value="classpath:/red5.properties" />
+		class="org.red5.spring.ExtendedPropertyPlaceholderConfigurer">
+		<property name="wildcardLocations">
+			<list>
+				<value>classpath:/red5.properties</value>
+				<value>classpath*:/red5-*.properties</value>
+			</list>
+		</property>
 	</bean>
 
     <!-- Socket policy handler -->
@@ -51,6 +56,23 @@
 		<property name="handler" ref="rtmpHandler" />
 		<property name="codecFactory" ref="rtmpCodecFactory" />
 		<property name="rtmpConnManager" ref="rtmpMinaConnManager" />
+	</bean>
+	
+	<!-- RTMP Mina Transport -->
+	<bean id="rtmpTransport" class="org.red5.server.net.rtmp.RTMPMinaTransport" init-method="start" destroy-method="stop">
+		<property name="ioHandler" ref="rtmpMinaIoHandler" />
+		<property name="address" value="${rtmp.host}" />
+		<property name="port" value="${rtmp.port}" />
+		<property name="receiveBufferSize" value="${rtmp.receive_buffer_size}" />
+		<property name="sendBufferSize" value="${rtmp.send_buffer_size}" />
+		<property name="eventThreadsCore" value="${rtmp.event_threads_core}" />
+		<property name="eventThreadsMax" value="${rtmp.event_threads_max}" />
+		<property name="eventThreadsQueue" value="${rtmp.event_threads_queue}" />
+		<property name="eventThreadsKeepalive" value="${rtmp.event_threads_keepalive}" />
+		<!-- This is the interval at which the sessions are polled for stats. If mina monitoring is not
+				enabled, polling will not occur. -->
+		<property name="jmxPollInterval" value="1000" />
+		<property name="tcpNoDelay" value="${rtmp.tcp_nodelay}" />
 	</bean>
 	
 	<!-- RTMP Mina Connection -->

@@ -32,6 +32,7 @@ import org.red5.server.api.persistence.IPersistenceStore;
 import org.red5.server.api.service.IServiceInvoker;
 import org.red5.server.exception.ScopeHandlerNotFoundException;
 import org.red5.server.service.ServiceNotFoundException;
+import org.red5.spring.ExtendedPropertyPlaceholderConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
@@ -224,6 +225,12 @@ public class Context implements IContext, ApplicationContextAware, ContextMBean 
 		this.applicationContext = context;
 		String deploymentType = System.getProperty("red5.deployment.type");
 		logger.debug("Deployment type: " + deploymentType);
+		
+		if ( deploymentType == null ) {
+			ExtendedPropertyPlaceholderConfigurer configurer = 
+				(ExtendedPropertyPlaceholderConfigurer)applicationContext.getBean( "placeholderConfig" );
+			deploymentType = configurer.getProperties().getProperty( "red5.deployment.type" );
+		}
 		if (deploymentType == null) {
 			// standalone core context
 			String config = System.getProperty("red5.conf_file");
