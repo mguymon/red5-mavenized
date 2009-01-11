@@ -1,7 +1,7 @@
 h2. Red5 Webapp Archetype - Mavenized
 
 A "mavenized":http://maven.apache.org component of the "Red5 Flash Server":http://osflash.org/red5 version 0.8rc1. 
-This module contains all the base classes and resources required to run a standalone Apache Tomcat server with Red5
+This module contains all the base classes and resources required to run a standalone Apache Tomcat 5.5 server with Red5
 
 . . . if it worked
 

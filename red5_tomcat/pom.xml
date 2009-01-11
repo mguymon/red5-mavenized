@@ -19,11 +19,15 @@
 			<version>1.5.6</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>catalina</artifactId>
-			<version>6.0.18</version>
-		</dependency>
-
+		    <groupId>org.apache.tomcat</groupId>
+		    <artifactId>catalina</artifactId>
+		    <version>6.0.18</version>
+		</dependency> 
+		<dependency>
+		    <groupId>tomcat</groupId>
+		    <artifactId>tomcat-util</artifactId>
+		    <version>5.5.23</version>
+		</dependency> 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

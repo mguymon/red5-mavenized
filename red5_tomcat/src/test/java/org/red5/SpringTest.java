@@ -10,6 +10,7 @@ public class SpringTest {
 
 	@Test
 	public void springContextWillLoad() {
+		System.setProperty("red5.deployment.type", "test");
 		BeanFactoryLocator locator = ContextSingletonBeanFactoryLocator.getInstance("classpath:red5.xml");
 		locator.useBeanFactory("red5.common");
 		assertNotNull( locator );

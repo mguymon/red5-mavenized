@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.util.Properties;
 
 import org.red5.server.api.Red5;
+import org.red5.spring.ExtendedPropertyPlaceholderConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -73,7 +74,7 @@ public class Standalone {
 	public static void main(String[] args) throws Throwable {
 		
 		//System.setProperty("DEBUG", "true");
-
+		
 		/*
 		if (false) {
 			allocator = new DebugPooledByteBufferAllocator(true);
@@ -106,7 +107,22 @@ public class Standalone {
                 System.setProperty(key, props.getProperty(key));
             }
         }
+        
+        props.load( Standalone.class.getResourceAsStream( "/red5-tomcat.properties" ) );
 
+        for (Object o : props.keySet()) {
+            String key = (String) o;
+            if (key != null && !key.equals("")) {
+                System.setProperty(key, props.getProperty(key));
+            }
+        }
+        
+        log.info( System.getProperty( "red5.root" ) );
+        if ( System.getProperty( "red5.root" ) == null ) {
+        	ExtendedPropertyPlaceholderConfigurer.addPlaceholderProperty( "red5.root", System.getProperty("user.dir") );
+        	System.setProperty( "red5.root", System.getProperty("user.dir") );
+        }
+        
 		try {
 			ContextSingletonBeanFactoryLocator.getInstance(red5Config)
 					.useBeanFactory("red5.common");
