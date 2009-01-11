@@ -18,30 +18,10 @@ To enable Red5 support in a maven project, just add the follow dependency to the
 
 h3. Getting the red5-base working
 
-Red5 is wired together using "Spring":http://www.springsource.org/, the red5-base Spring Contexts are red5.xml, 
-red5-core.xml, red5-common.xml, and red5-default.xml. These contexts will need to be loaded for the Red5 Server
-to function properly.
-
-The Red5 Base does not configure an RTMP transport by default, it must be configured. The following below is an example 
-Spring beans that would created a RMTP transport running on port 1935 for the contextPath /sample.
+Example excerpt of a Spring context for creating a Red5 Application.
 
 <pre>
 	<code>
-	    <!-- RTMP Mina Transport -->
-		<bean id="rtmpTransport" class="org.red5.server.net.rtmp.RTMPMinaTransport" init-method="start" destroy-method="stop">
-			<property name="ioHandler" ref="rtmpMinaIoHandler" />
-			<property name="address" value="0.0.0.0" />
-			<property name="port" value="1935" />
-			<property name="receiveBufferSize" value="65536" />
-			<property name="sendBufferSize" value="271360" />
-			<property name="eventThreadsCore" value="16" />
-			<property name="eventThreadsMax" value="64" />
-			<property name="eventThreadsQueue" value="0" />
-			<property name="eventThreadsKeepalive" value="60" />
-			<property name="jmxPollInterval" value="1000" />
-			<property name="tcpNoDelay" value="true" />
-		</bean>
-	
 		<!-- Red5 Context -->
 		<bean id="webapp.context" class="org.red5.server.Context" autowire="byType" />
 		
@@ -60,15 +40,39 @@ Spring beans that would created a RMTP transport running on port 1935 for the co
 	</code>
 </pre>
 
-For the above example to work, the *red5-core.xml* must be loaded first, since it relies on the _rtmpMinaIoHandler_ bean.
-Below is an example of loading all of the Red5 Spring Contexts first, then the application from a web.xml:
+For Red5 to run, the Red5 Spring context hierarchy needs to be built. This can be easily done in the web.xml, such as
+the follow excerpt: 
 
 <pre>
 	<code>
 		<context-param>
-		    <param-name>contextConfigLocation</param-name>
-		    <param-value>classpath:red5-*.xml,classpath:exampleContext.xml,</param-value>
+		    <param-name>globalScope</param-name>
+		    <param-value>default</param-value>
 		</context-param>
+	
+		<context-param>
+		    <param-name>contextConfigLocation</param-name>
+		    <param-value>classpath:red5-webapp.xml</param-value>
+		</context-param>
+	
+		<context-param>
+			<param-name>locatorFactorySelector</param-name>
+			<param-value>classpath:red5.xml</param-value>
+		</context-param>
+	
+		<context-param>
+			<param-name>parentContextKey</param-name>
+			<param-value>default.context</param-value>
+		</context-param>
+	
+		<context-param>
+			<param-name>webAppRootKey</param-name>
+			<param-value>/sample</param-value>
+		</context-param>
+	
+		<listener>
+		    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+		</listener>
 	</code>
 </pre>
 
