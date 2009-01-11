@@ -18,30 +18,34 @@ To enable Red5 support in a maven project, just add the follow dependency to the
 
 h3. Getting the red5-base working
 
-Example excerpt of a Spring context for creating a Red5 Application.
+Example of a Spring context for creating a Red5 Application.
 
 <pre>
 	<code>
-		<!-- Red5 Context -->
-		<bean id="webapp.context" class="org.red5.server.Context" autowire="byType" />
-		
-		<!-- Red5 Web Scope -->
-		<bean id="webapp.scope" class="org.red5.server.WebScope" init-method="register">
-			<property name="server" ref="red5.server" />
-			<property name="parent" ref="global.scope" />
-			<property name="context" ref="webapp.context" />
-			<property name="handler" ref="webapp.handler" />
-			<property name="contextPath" value="/sample" />
-			<property name="virtualHosts" value="*,localhost, localhost:5080, 127.0.0.1:5080" />
-		</bean>
-		
-		<!-- Red5 Application -->
-		<bean id="webapp.handler" class="com.slackworks.SampleApp" />
+		<beans>
+		  	...
+			<!-- Red5 Context -->
+			<bean id="webapp.context" class="org.red5.server.Context" autowire="byType" />
+			
+			<!-- Red5 Web Scope -->
+			<bean id="webapp.scope" class="org.red5.server.WebScope" init-method="register">
+				<property name="server" ref="red5.server" />
+				<property name="parent" ref="global.scope" />
+				<property name="context" ref="webapp.context" />
+				<property name="handler" ref="webapp.handler" />
+				<property name="contextPath" value="/sample" />
+				<property name="virtualHosts" value="*,localhost, localhost:5080, 127.0.0.1:5080" />
+			</bean>
+			
+			<!-- Red5 Application -->
+			<bean id="webapp.handler" class="com.slackworks.SampleApp" />
+			...
+		</beans>
 	</code>
 </pre>
 
 For Red5 to run, the Red5 Spring context hierarchy needs to be built. This can be easily done in the web.xml, such as
-the follow excerpt: 
+the following excerpt: 
 
 <pre>
 	<code>
