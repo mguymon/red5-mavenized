@@ -16,9 +16,6 @@ import java.security.Key;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * HMAC - a little utility to compute HMACs on data; the data and key may be
  * obtained from files, from the command line, or from the clip board. Note that
@@ -60,16 +57,14 @@ public class HMAC {
 
 	public static final String DEFAULT_ALG = "HMacMD5";
 
-	private static Logger logger = LoggerFactory.getLogger(HMAC.class);
-	
 	/**
 	 * Send a message to the user, with an exception.
 	 */
 	public static final void message(String s, Exception e) {
-		if ( e != null ) {
-			logger.error(s, e);
-		} else {
-			logger.info( s, e );
+		System.err.println("hmac: " + s);
+		if (e != null) {
+			System.err.println("\texception was: " + e);
+			e.printStackTrace(System.err);
 		}
 	}
 
@@ -311,23 +306,15 @@ public class HMAC {
 			message("Algorithm: " + alg);
 		}
 
-		if (keyBytes == null || alg == null ) {
-			message("Key data: " + keyBytes);			
-			message("Algorithm: " + alg);
-			message( "keyBytes and/or alg is null" );
-			
-			return null;
-		} else {
-			try {
-				hm = Mac.getInstance(alg);
-	
-				Key k1 = new SecretKeySpec(keyBytes, 0, keyBytes.length, alg);
-				hm.init(k1);
-				result = hm.doFinal(dataBytes);
-			} catch (Exception e) {
-				message("Bad algorithm or crypto library problem", e);
-			}
-		}		
+		try {
+			hm = Mac.getInstance(alg);
+
+			Key k1 = new SecretKeySpec(keyBytes, 0, keyBytes.length, alg);
+			hm.init(k1);
+			result = hm.doFinal(dataBytes);
+		} catch (Exception e) {
+			message("Bad algorithm or crypto library problem", e);
+		}
 		return result;
 	}
 
