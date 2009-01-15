@@ -21,6 +21,8 @@ package org.red5.server.tomcat;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.net.BindException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,16 +46,17 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.realm.MemoryRealm;
 import org.apache.catalina.startup.Embedded;
+import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.ContextLoader;
 import org.red5.server.ContextLoaderMBean;
 import org.red5.server.LoaderBase;
 import org.red5.server.LoaderMBean;
+import org.red5.server.ServletClassLoader;
 import org.red5.server.api.IApplicationContext;
 import org.red5.server.jmx.JMXAgent;
 import org.red5.server.jmx.JMXFactory;
 import org.red5.server.util.FileUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.WebApplicationContext;
@@ -92,7 +95,7 @@ public class TomcatLoader extends LoaderBase implements
 	}
 
 	// Initialize Logging
-	private static Logger log = LoggerFactory.getLogger(TomcatLoader.class);
+	private static Logger log = Red5LoggerFactory.getLogger(TomcatLoader.class);
 	
 	public static final String defaultSpringConfigLocation = "/WEB-INF/red5-*.xml";
 	public static final String defaultParentContextKey = "default.context";
@@ -141,6 +144,11 @@ public class TomcatLoader extends LoaderBase implements
 	protected Realm realm;
 
 	/**
+	 * Hosts
+	 */
+	protected List<Host> hosts;
+	
+	/**
 	 * Valves 
 	 */
 	protected List<Valve> valves = new ArrayList<Valve>();
@@ -161,29 +169,20 @@ public class TomcatLoader extends LoaderBase implements
 		log.debug("Add context - path: {} docbase: {}", path, docBase);
 		org.apache.catalina.Context c = embedded.createContext(path, docBase);
 		log.debug("Context name: {} docbase: {} encoded: {}", new Object[]{c.getName(), c.getDocBase(), c.getEncodedPath()});
-		//see if we can load the webapp cl
-		try {
-			Class.forName("org.red5.server.tomcat.WebappClassLoader").newInstance();
-		} catch (Exception e) {
-			log.error("{}", e);
-			e.printStackTrace();
-		}
 		if (c != null) {
 			Object ldr = c.getLoader();
 			log.debug("Context loader: {}", ldr);
-			if (ldr != null) {
-				if (ldr instanceof WebappLoader) {
-					log.debug("Replacing context loader");				
-					((WebappLoader) ldr).setLoaderClass("org.red5.server.tomcat.WebappClassLoader");
-				} else {
-					log.debug("Context loader was instance of {}", ldr.getClass().getName());
-				}
-			} else {
+			if (ldr == null) {
 				log.debug("Context loader was null");
-				ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-				log.debug("Thread context class loader: {}", classloader);
+				ClassLoader classloader;
+				try {
+					classloader = ServletClassLoader.getServletClassLoader(new File(docBase), ServletClassLoader.USE_WAR_LIB);
+				} catch (IOException e) {
+					log.warn("Servlet class loader setup error", e);
+					classloader = Thread.currentThread().getContextClassLoader();
+				}
+				log.debug("Context class loader: {}", classloader);
 				WebappLoader wldr = new WebappLoader(classloader);
-				wldr.setLoaderClass("org.red5.server.tomcat.WebappClassLoader");
 				c.setLoader(wldr);
 			}  				    				
 		}
@@ -270,22 +269,14 @@ public class TomcatLoader extends LoaderBase implements
 	 */
 	public void init() {
 		log.info("Loading tomcat context");
-		
-		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-
-		//set the classloader
-		Loader loader = embedded.createLoader(classloader);
 
 		engine = embedded.createEngine();
 		engine.setDefaultHost(host.getName());
 		engine.setName("red5Engine");
-		engine.setParentClassLoader(classloader);
-		
-		host.setParentClassLoader(classloader);
 		
 		if (webappFolder == null) {
 			// Use default webapps directory
-			webappFolder = System.getProperty("red5.root") + "/webapps";
+			webappFolder = FileUtil.formatPath(System.getProperty("red5.root"), "/webapps");
 		}
 		System.setProperty("red5.webapp.root", webappFolder);
 		log.info("Application root: {}", webappFolder);
@@ -311,6 +302,17 @@ public class TomcatLoader extends LoaderBase implements
 					log.debug("Adding context from directory scan: {}", dirName);
 					ctx = addContext(dirName, webappContextDir);
 				}
+				
+				//put watches on context and web configs
+				ctx.addWatchedResource("WEB-INF/web.xml");
+				ctx.addWatchedResource("META-INF/context.xml");
+				
+				File contextConfig = new File(webappContextDir, "META-INF/context.xml");
+				if (contextConfig.exists()) {
+					log.debug("Setting default context.xml");
+					((StandardContext) ctx).setDefaultContextXml(contextConfig.getAbsolutePath());
+				}
+				
 				webappContextDir = null;
 			}
 		}
@@ -343,6 +345,15 @@ public class TomcatLoader extends LoaderBase implements
 		
 		// baseHost = embedded.createHost(hostName, appRoot);
 		engine.addChild(host);
+		
+		// add any additional hosts
+		if (hosts != null && !hosts.isEmpty()) {
+			log.info("Adding {} additional hosts", hosts.size());
+			for (Host h : hosts) {
+				log.debug("Host - name: {} appBase: {} info: {}", new Object[]{h.getName(), h.getAppBase(), h.getInfo()});
+				engine.addChild(h);
+			}
+		}
 
 		// Add new Engine to set of Engine for embedded server
 		embedded.addEngine(engine);
@@ -352,13 +363,13 @@ public class TomcatLoader extends LoaderBase implements
 			log.debug("Setting connection property: {} = {}", key, connectionProperties.get(key));
 			connector.setProperty(key, connectionProperties.get(key));
 		}
-		
-		// Add new Connector to set of Connectors for embedded server,
-		// associated with Engine
-		embedded.addConnector(connector);
-				
+						
 		// Start server
 		try {
+    		// Add new Connector to set of Connectors for embedded server,
+    		// associated with Engine
+    		embedded.addConnector(connector);
+
 			log.info("Starting Tomcat servlet engine");	
 			embedded.start();
 
@@ -375,6 +386,13 @@ public class TomcatLoader extends LoaderBase implements
 					log.debug("Path: {}", prefix);
 
 					try {
+						if (ctx.resourcesStart()) {
+							log.debug("Resources started");
+						}
+						
+						log.debug("Context - available: {} privileged: {}, start time: {}, reloadable: {}", new Object[]{
+								ctx.getAvailable(), ctx.getPrivileged(), ctx.getStartTime(), ctx.getReloadable()});
+						
 						Loader cldr = ctx.getLoader();
 						log.debug("Loader type: {}", cldr.getClass().getName());
 						ClassLoader webClassLoader = cldr.getClassLoader();
@@ -403,41 +421,6 @@ public class TomcatLoader extends LoaderBase implements
 						//set the root webapp ctx attr on the each servlet context so spring can find it later					
 						servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appctx);
 						appctx.refresh();
-						//check if we want to use naming
-						if (embedded.isUseNaming()) {
-    						/*
-    						String ctxName = servletContext.getContextPath().replaceAll("/", "");
-    						if (StringUtils.isEmpty(ctxName)) {
-    							ctxName = "root";
-    						}
-    						log.debug("Context name for naming resources: {}", ctxName);
-    						//
-    						NamingResources res = ctx.getNamingResources();
-    						if (res == null) {
-    							res = new NamingResources();
-    						}
-    						//context name env var
-    						ContextEnvironment env = new ContextEnvironment();
-    						env.setDescription("JNDI logging context for this app");
-    						env.setName("logback/context-name");
-    						env.setType("java.lang.String");
-    						env.setValue(ctxName);
-    						// add to naming resources
-    						res.addEnvironment(env);
-    						//configuration resource - logger config file name
-    						ContextEnvironment env2 = new ContextEnvironment();
-    						env2.setDescription("URL for configuring logback context");
-    						env2.setName("logback/configuration-resource");
-    						env2.setType("java.lang.String");
-    						env2.setValue("logback-" + ctxName + ".xml");
-    						//
-    						res.addEnvironment(env2);
-    						//
-    						ctx.setNamingResources(res);
-    						*/
-						} else {
-							log.info("Naming (JNDI) is not enabled");
-						}
 					} catch (Throwable t) {
 						log.error("Error setting up context: {} due to: {}", servletContext.getContextPath(), t.getMessage());
 						//if (log.isDebugEnabled()) {
@@ -469,6 +452,12 @@ public class TomcatLoader extends LoaderBase implements
 			}
 		} catch (org.apache.catalina.LifecycleException e) {
 			log.error("Error loading Tomcat", e);
+		} catch (Exception e) {
+            if (e instanceof BindException) {
+			    log.error("Error loading tomcat, unable to bind connector. You may not have permission to use the selected port", e);
+			} else {
+			    log.error("Error loading tomcat", e);
+			}
 		} finally {
 			registerJMX();		
 		}
@@ -661,9 +650,7 @@ public class TomcatLoader extends LoaderBase implements
 	 */
 	public void setHosts(List<Host> hosts) {
 		log.debug("setHosts: {}", hosts.size());
-		for (Host h : hosts) {
-			engine.addChild(h);
-		}
+		this.hosts = hosts;
 	}
 
 	/**

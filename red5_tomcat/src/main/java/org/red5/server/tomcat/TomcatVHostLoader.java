@@ -35,7 +35,6 @@ import org.apache.catalina.Loader;
 import org.apache.catalina.Valve;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
-import org.apache.catalina.loader.WebappLoader;
 import org.red5.server.ContextLoader;
 import org.red5.server.ContextLoaderMBean;
 import org.red5.server.LoaderBase;
@@ -132,6 +131,7 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 					log.debug("Adding context from directory scan: {}", dirName);
 					ctx = addContext(dirName, webappContextDir);
 				}
+				log.debug("Context: {}", ctx);
 				webappContextDir = null;			
 			}
 		}
@@ -141,7 +141,7 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 		// Dump context list
 		if (log.isDebugEnabled()) {
 			for (Container cont : host.findChildren()) {
-				log.debug("Context child name: " + cont.getName());
+				log.debug("Context child name: {}", cont.getName());
 			}
 		}
 
@@ -434,8 +434,7 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 				log.debug("Valve name: {}", s);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("", e);
 		}
 
 		Valve[] valves = ((StandardHost) host).getValves();
