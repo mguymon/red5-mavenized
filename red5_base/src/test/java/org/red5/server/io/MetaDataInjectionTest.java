@@ -3,7 +3,7 @@ package org.red5.server.io;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006 by respective authors. All rights reserved.
+ * Copyright (c) 2006-2008 by respective authors. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -17,10 +17,6 @@ package org.red5.server.io;
  * You should have received a copy of the GNU Lesser General Public License along
  * with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * @author The Red5 Project (red5@osflash.org)
- * @author Dominick Accattato (daccattato@gmail.com)
- * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
 import java.io.File;
@@ -48,8 +44,8 @@ import org.red5.server.cache.NoCacheImpl;
 
 /**
  * @author The Red5 Project (red5@osflash.org)
- * @author daccattato(daccattato@gmail.com)
- * @version 0.3
+ * @author Dominick Accattato (daccattato@gmail.com)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 public class MetaDataInjectionTest extends TestCase {
 
@@ -64,13 +60,6 @@ public class MetaDataInjectionTest extends TestCase {
 		service = new FLVService();
 		service.setSerializer(new Serializer());
 		service.setDeserializer(new Deserializer());
-		
-		File dir = new File("target/test");
-		
-		if (!dir.isDirectory()) {
-			dir.mkdirs();
-		}
-		
 	}
 
 	/**
@@ -78,7 +67,7 @@ public class MetaDataInjectionTest extends TestCase {
 	 * @throws IOException
 	 */
 	public void testMetaDataInjection() throws IOException {
-		File f = new File("src/test/resources/test_cue1.flv");
+		File f = new File("src/test/resources/fixtures/test_cue1.flv");
 
 		if(f.exists()) {
 			f.delete();
@@ -94,7 +83,7 @@ public class MetaDataInjectionTest extends TestCase {
 		ITagWriter writer = flv.getWriter();
 
 		// Create a reader for testing
-		File readfile = new File("target/test/test_cue.flv");
+		File readfile = new File("src/test/resources/fixtures/test_cue.flv");
 		IFLV readflv = (IFLV) service.getStreamableFile(readfile);
 		readflv.setCache(NoCacheImpl.getInstance());
 
@@ -114,18 +103,18 @@ public class MetaDataInjectionTest extends TestCase {
 	 */
 	private void writeTagsWithInjection(ITagReader reader, ITagWriter writer) throws IOException {
 
-		IMetaCue cp = new MetaCue();
+		IMetaCue cp = new MetaCue<Object, Object>();
 		cp.setName("cue_1");
 		cp.setTime(0.01);
 		cp.setType(ICueType.EVENT);
 
-		IMetaCue cp1 = new MetaCue();
+		IMetaCue cp1 = new MetaCue<Object, Object>();
 		cp1.setName("cue_1");
 		cp1.setTime(2.01);
 		cp1.setType(ICueType.EVENT);
 
 		// Place in TreeSet for sorting
-		TreeSet ts = new TreeSet();
+		TreeSet<IMetaCue> ts = new TreeSet<IMetaCue>();
 		ts.add(cp);
 		ts.add(cp1);
 
@@ -179,7 +168,7 @@ public class MetaDataInjectionTest extends TestCase {
 	 */
 	private ITag injectMetaData(Object cue, ITag tag) {
 
-		IMetaCue cp = (MetaCue) cue;
+		IMetaCue cp = (MetaCue<?, ?>) cue;
 		Output out = new Output(ByteBuffer.allocate(1000));
 		Serializer ser = new Serializer();
 		ser.serialize(out,"onCuePoint");
@@ -201,9 +190,8 @@ public class MetaDataInjectionTest extends TestCase {
 	 * @return int time
 	 */
 	private int getTimeInMilliseconds(Object object) {
-		IMetaCue cp = (MetaCue) object;
+		IMetaCue cp = (MetaCue<?, ?>) object;
 		return (int) (cp.getTime() * 1000.00);
-
 	}
 
 }

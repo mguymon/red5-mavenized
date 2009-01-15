@@ -60,11 +60,7 @@ public class JMXFactory {
 			mbs = (MBeanServer) MBeanServerFactory.findMBeanServer(null).get(0);
 		} catch (Exception e) {
 			// grab a reference to the "platform" MBeanServer
-			try {
-				mbs = ManagementFactory.getPlatformMBeanServer();
-			} catch (Exception exception) {
-				//log.error( "Failed to access MBeanServer", exception );
-			}
+			mbs = ManagementFactory.getPlatformMBeanServer();
 		}
 	}
 
@@ -140,6 +136,7 @@ public class JMXFactory {
 		return mbs;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static boolean registerNewMBean(String className,
 			Class interfaceClass) {
 		boolean status = false;
@@ -160,6 +157,7 @@ public class JMXFactory {
 		return status;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static boolean registerNewMBean(String className,
 			Class interfaceClass, ObjectName name) {
 		boolean status = false;
@@ -179,6 +177,7 @@ public class JMXFactory {
 		return status;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static boolean registerNewMBean(String className,
 			Class interfaceClass, String name) {
 		boolean status = false;

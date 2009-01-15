@@ -19,6 +19,7 @@ package org.red5.server.api;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -29,7 +30,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 /**
  * The scope object.
  * 
- * A statefull object shared between a group of clients connected to the same
+ * A stateful object shared between a group of clients connected to the same
  * <tt>context path</tt>. Scopes are arranged in hierarchical way, so its possible for
  * a scope to have a parent and children scopes. If a client connects to a scope then they are
  * also connected to its parent scope. The scope object is used to access
@@ -152,7 +153,7 @@ public interface IScope extends IBasicScope, ResourcePatternResolver,
 	 * 
 	 * @return Iterator holding all connections
 	 */
-	public Iterator<IConnection> getConnections();
+	public Collection<Set<IConnection>> getConnections();
 
 	/**
 	 * Lookup connections.

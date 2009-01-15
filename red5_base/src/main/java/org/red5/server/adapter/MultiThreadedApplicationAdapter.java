@@ -25,10 +25,10 @@ import static org.red5.server.api.ScopeUtils.isRoom;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -37,6 +37,7 @@ import org.red5.io.IStreamableFileFactory;
 import org.red5.io.IStreamableFileService;
 import org.red5.io.ITagReader;
 import org.red5.io.StreamableFileFactory;
+import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IClient;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.IScope;
@@ -73,7 +74,6 @@ import org.red5.server.stream.PlaylistSubscriberStream;
 import org.red5.server.stream.ProviderService;
 import org.red5.server.stream.StreamService;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * ApplicationAdapter class serves as a base class for your Red5 applications.
@@ -122,7 +122,7 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
 	/**
 	 * Logger object
 	 */
-	protected static Logger log = LoggerFactory.getLogger(MultiThreadedApplicationAdapter.class);
+	protected static Logger log = Red5LoggerFactory.getLogger(MultiThreadedApplicationAdapter.class);
 
 	/**
 	 * List of application listeners.
@@ -162,8 +162,8 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
     /**
      * List of handlers that protect shared objects.
      */
-    private Set<ISharedObjectSecurity> sharedObjectSecurity = new HashSet<ISharedObjectSecurity>();
-
+    private Set<ISharedObjectSecurity> sharedObjectSecurity = new HashSet<ISharedObjectSecurity>(); 
+    
     /**
 	 * Register listener that will get notified about application events. Please
 	 * note that return values (e.g. from {@link IApplication#appStart(IScope)})
@@ -344,9 +344,18 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
 	@Override
 	public void disconnect(IConnection conn, IScope scope) {
 		log.debug("disconnect: {} << {}", conn, scope);
-		//log w3c connect event
-		log.info("W3C x-category:session x-event:disconnect c-ip:{} c-client-id:{}", conn.getRemoteAddress(), conn.getClient().getId());
-		if (isApp(scope)) {
+		if (log.isInfoEnabled()) {
+			//log w3c connect event
+			IClient client =  conn.getClient();
+			if (client == null) {		
+        		//log w3c connect event
+        		log.info("W3C x-category:session x-event:disconnect c-ip:{}", conn.getRemoteAddress());
+			} else {
+        		//log w3c connect event
+        		log.info("W3C x-category:session x-event:disconnect c-ip:{} c-client-id:{}", conn.getRemoteAddress(), client.getId());
+			}
+		}	
+        if (isApp(scope)) {
 			appDisconnect(conn);
 		} else if (isRoom(scope)) {
 			roomDisconnect(conn);
@@ -632,20 +641,6 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
 		// dummy for now, this makes flv player work
 		// they dont wait for connected status they wait for onBWDone
 		ServiceUtils.invokeOnConnection(conn, "onBWDone", new Object[] {});
-		/*
-		 * ServiceUtils.invokeOnConnection(conn, "onBWCheck", new Object[] {},
-		 * new IPendingServiceCallback() { public void
-		 * resultReceived(IPendingServiceCall call) { log.debug("onBWCheck 1
-		 * result: " + call.getResult()); } }); int[] filler = new int[1024];
-		 * ServiceUtils.invokeOnConnection(conn, "onBWCheck", new Object[] {
-		 * filler }, new IPendingServiceCallback() { public void
-		 * resultReceived(IPendingServiceCall call) { log.debug("onBWCheck 2
-		 * result: " + call.getResult()); ServiceUtils.invokeOnConnection(conn,
-		 * "onBWDone", new Object[] { new Integer(1000), new Integer(300), new
-		 * Integer(6000), new Integer(300) }, new IPendingServiceCallback() {
-		 * public void resultReceived(IPendingServiceCall call) {
-		 * log.debug("onBWDone result: " + call.getResult()); } }); } });
-		 */
 	}
 
 	/* Wrapper around ISharedObjectService */
@@ -764,9 +759,11 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
 	}
 
 	/**
-	 * Returns list of stream names broadcasted in <pre>scope</pre>. Broadcast stream name is somewhat different
-	 * from server stream name. Server stream name is just an ID assigned by Red5 to every created stream. Broadcast stream name
-	 * is the name that is being used to subscribe to the stream at client side, that is, in <code>NetStream.play</code> call.
+	 * Returns list of stream names broadcasted in <pre>scope</pre>. Broadcast 
+	 * stream name is somewhat different from server stream name. Server 
+	 * stream name is just an ID assigned by Red5 to every created stream. 
+	 * Broadcast stream name is the name that is being used to subscribe to the 
+	 * stream at client side, that is, in <code>NetStream.play</code> call.
 	 * 
 	 * @param	scope	Scope to retrieve broadcasted stream names
 	 * @return	List of broadcasted stream names.
@@ -838,7 +835,7 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
 	 * across all rooms of the applications.
 	 * 
 	 * @param interval
-	 *            Time inverval to run the scheduled job
+	 *            Time interval to run the scheduled job
 	 * @param job
 	 *            Scheduled job object
 	 * 
@@ -909,6 +906,32 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
 	}
 
 	/**
+	 * Pauses a scheduled job
+	 * 
+	 * @param name
+	 *            Scheduled job name
+	 */
+	public void pauseScheduledJob(String name) {
+		ISchedulingService service = (ISchedulingService) getScopeService(
+				scope, ISchedulingService.class, QuartzSchedulingService.class,
+				false);
+		service.pauseScheduledJob(name);
+	}
+	
+	/**
+	 * Resumes a scheduled job
+	 * 
+	 * @param name
+	 *            Scheduled job name
+	 */
+	public void resumeScheduledJob(String name) {
+		ISchedulingService service = (ISchedulingService) getScopeService(
+				scope, ISchedulingService.class, QuartzSchedulingService.class,
+				false);
+		service.resumeScheduledJob(name);
+	}	
+	
+	/**
 	 * Removes scheduled job from scheduling service list
 	 * 
 	 * @param name
@@ -946,7 +969,7 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
 		IProviderService provider = (IProviderService) getScopeService(scope,
 				IProviderService.class, ProviderService.class);
 		File file = provider.getVODProviderFile(scope, name);
-		if (file != null) {
+		if (file != null && file.canRead()) {
     		IStreamableFileFactory factory = (IStreamableFileFactory) ScopeUtils
     				.getScopeService(scope, IStreamableFileFactory.class,
     						StreamableFileFactory.class);
@@ -1043,17 +1066,16 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
      * Cleans up ghost connections
      */
     protected void killGhostConnections() {
-        Iterator<IConnection> iter = getConnectionsIter();
-        while (iter.hasNext()) {
-            IConnection conn = iter.next();
-
-            // Ping client
-            conn.ping();
-
-            // Time to live exceeded, disconnect
-            if (conn.getLastPingTime() > clientTTL * 1000) {
-                disconnect(conn, scope);    
-            }
+		Collection<Set<IConnection>> conns = getConnections();
+		for (Set<IConnection> set : conns) {
+			for (IConnection conn : set) {
+                // Ping client
+                conn.ping();
+                // Time to live exceeded, disconnect
+                if (conn.getLastPingTime() > clientTTL * 1000) {
+                    disconnect(conn, scope);    
+                }
+			}
         }
     }
     
@@ -1081,12 +1103,33 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
 			//converted to seconds
 			publishDuration = (System.currentTimeMillis() - ((ClientBroadcastStream) stream).getCreationTime()) / 1000;
 		}
-		log.info("W3C x-category:stream x-event:unpublish c-ip:{} cs-bytes:{} sc-bytes:{} x-sname:{} x-file-length:{}", new Object[]{conn.getRemoteAddress(), conn.getReadBytes(), conn.getWrittenBytes(), stream.getName(), publishDuration});		
+		log.info("W3C x-category:stream x-event:unpublish c-ip:{} cs-bytes:{} sc-bytes:{} x-sname:{} x-file-length:{} x-name:{}", new Object[]{conn.getRemoteAddress(), conn.getReadBytes(), conn.getWrittenBytes(), stream.getName(), publishDuration, stream.getPublishedName()});		
 		String recordingName = stream.getSaveFilename();
 		//if its not null then we did a recording
 		if (recordingName != null) {
 			//use cs-bytes for file size for now
 			log.info("W3C x-category:stream x-event:recordstop c-ip:{} cs-bytes:{} sc-bytes:{} x-sname:{} x-file-name:{} x-file-length:{} x-file-size:{}", new Object[]{conn.getRemoteAddress(), conn.getReadBytes(), conn.getWrittenBytes(), stream.getName(), recordingName, publishDuration, conn.getReadBytes()});					
+			//if the stream length is 0 bytes then delete it, this
+			//is a fix for SN-20
+			//get the web root
+			String webappsPath = System.getProperty("red5.webapp.root");
+			//add context name
+			File file = new File(webappsPath, getName() + '/' + recordingName);
+			if (file != null) {
+    			log.debug("File path: {}", file.getAbsolutePath());
+    			if (file.exists()) {
+    				//if publish duration or length are zero
+        			if (publishDuration == 0 || file.length() == 0) {
+        				if (file.delete()) {
+        					log.info("File {} was deleted", file.getName());
+        				} else {
+        					log.info("File {} was not deleted, it will be deleted on exit", file.getName());
+        					file.deleteOnExit();
+        				}
+        			}
+    			}
+    			file = null;
+			}
 		}
 	}
 
@@ -1095,7 +1138,7 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
 
 	public void streamPlaylistItemPlay(IPlaylistSubscriberStream stream, IPlayItem item, boolean isLive) {
 		//log w3c connect event		
-		log.info("W3C x-category:stream x-event:play c-ip:{} x-sname:{}", new Object[]{Red5.getConnectionLocal().getRemoteAddress(), stream.getName()});		
+		log.info("W3C x-category:stream x-event:play c-ip:{} x-sname:{} x-name:{}", new Object[]{Red5.getConnectionLocal().getRemoteAddress(), stream.getName(), item.getName()});		
 	}
 
 	public void streamPlaylistItemStop(IPlaylistSubscriberStream stream, IPlayItem item) {
@@ -1117,10 +1160,12 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
     			playDuration = (System.currentTimeMillis() - ((PlaylistSubscriberStream) stream).getCreationTime()) / 1000;
     		}
     		long playItemSize = -1;
+			String playItemName = "";
     		if (item != null) {
     			playItemSize = item.getSize();
+				playItemName = item.getName();
     		}
-    		log.info("W3C x-category:stream x-event:stop c-ip:{} cs-bytes:{} sc-bytes:{} x-sname:{} x-file-length:{} x-file-size:{}", new Object[]{remoteAddress, readBytes, writtenBytes, stream.getName(), playDuration, playItemSize});		
+    		log.info("W3C x-category:stream x-event:stop c-ip:{} cs-bytes:{} sc-bytes:{} x-sname:{} x-file-length:{} x-file-size:{} x-name:{}", new Object[]{remoteAddress, readBytes, writtenBytes, stream.getName(), playDuration, playItemSize, playItemName});		
     	}
 	}
 
@@ -1141,13 +1186,13 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
 	public void streamPublishStart(IBroadcastStream stream) {
 		//log w3c connect event
 		IConnection connection = Red5.getConnectionLocal();
-		log.info("W3C x-category:stream x-event:publish c-ip:{} x-sname:{}", new Object[]{connection != null ? connection.getRemoteAddress() : "0.0.0.0", stream.getName()});		
+		log.info("W3C x-category:stream x-event:publish c-ip:{} x-sname:{} x-name:{}", new Object[]{connection != null ? connection.getRemoteAddress() : "0.0.0.0", stream.getName(), stream.getPublishedName()});		
 	}
 
 	public void streamRecordStart(IBroadcastStream stream) {
 		//log w3c connect event
 		IConnection connection = Red5.getConnectionLocal();
-		log.info("W3C x-category:stream x-event:record c-ip:{} x-sname:{}", new Object[]{connection != null ? connection.getRemoteAddress() : "0.0.0.0", stream.getName()});		
+		log.info("W3C x-category:stream x-event:record c-ip:{} x-sname:{} x-file-name:{}", new Object[]{connection != null ? connection.getRemoteAddress() : "0.0.0.0", stream.getName(), stream.getSaveFilename()});		
 	}
 
 	public void streamSubscriberClose(ISubscriberStream stream) {

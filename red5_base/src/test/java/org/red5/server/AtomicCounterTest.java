@@ -1,6 +1,25 @@
 package org.red5.server;
 
-import static org.junit.Assert.assertTrue;
+/*
+ * RED5 Open Source Flash Server - http://www.osflash.org/red5
+ *
+ * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation; either version 2.1 of the License, or (at your option) any later
+ * version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along
+ * with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+*/
+
+import static org.junit.Assert.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -110,40 +129,8 @@ public class AtomicCounterTest {
 				intList.add(num);
 			}
 		}
-		//compare sizes.. this will not be the same for primative ints
-		assertTrue(intList.size() != setSize);
-
-	}
-
-	@Test
-	public void testUnsafeInt() throws Throwable {
-		UnsafeIntCounter i = new UnsafeIntCounter();
-
-		//pass that instance to the MTTR
-		TestRunnable[] trs = new TestRunnable[threads];
-		for (int t = 0; t < threads; t++) {
-			trs[t] = new UnsafeIntCountWorker(i);
-		}
-
-		MultiThreadedTestRunner mttr = new MultiThreadedTestRunner(trs);
-
-		//kickstarts the MTTR & fires off threads
-		long start = System.nanoTime();
-		mttr.runTestRunnables();
-		System.out.println("Runtime for unsafe int primative: "
-				+ (System.nanoTime() - start) + "ns");
-
-		//dump our ints into a set
-		Set<Integer> intList = new HashSet<Integer>(setSize);
-		for (TestRunnable r : trs) {
-			int[] nums = ((UnsafeIntCountWorker) r).getNumbers();
-			for (int num : nums) {
-				//a set will not allow duplicates
-				intList.add(num);
-			}
-		}
-		//check for dupes
-		assertTrue(intList.size() == setSize);
+		//compare sizes.. this should be the same for volatile ints since the worker now locks
+		assertEquals(intList.size(), setSize);
 
 	}
 
@@ -207,26 +194,6 @@ public class AtomicCounterTest {
 		}
 	}
 
-	private class UnsafeIntCountWorker extends TestRunnable {
-		private UnsafeIntCounter counter;
-
-		private int[] nums = new int[callsPerThread];
-
-		public UnsafeIntCountWorker(UnsafeIntCounter counter) {
-			this.counter = counter;
-		}
-
-		public void runTest() throws Throwable {
-			for (int i = 0; i < callsPerThread; i++) {
-				nums[i] = counter.next();
-			}
-		}
-
-		public int[] getNumbers() {
-			return nums;
-		}
-	}
-
 	/**
 	 * Simple counter using int and syncronized
 	 */
@@ -264,29 +231,21 @@ public class AtomicCounterTest {
 	 */
 	public class VolatileIntCounter {
 
+		// Note: volatile just ensures that you're always READING the lastest
+		// copy, but ++ is still not atomic, so this MUST be synced to work.
 		private volatile int counter = 0;
 
 		public int next() {
-			return counter++;
+			int retval = 0;
+			synchronized(this) {
+				retval = counter;
+				counter++;
+			}
+			return retval;
 		}
 
 		public int getCurrent() {
-			return counter;
-		}
-	}
-
-	/**
-	 * Simple counter using only a primative int (not thread-safe)
-	 */
-	public class UnsafeIntCounter {
-
-		private int counter = 0;
-
-		public int next() {
-			return counter++;
-		}
-
-		public int getCurrent() {
+			// always an atomic read
 			return counter;
 		}
 	}

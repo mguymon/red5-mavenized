@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -40,6 +41,7 @@ import org.red5.io.object.DataTypes;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.RecordSet;
 import org.red5.io.object.RecordSetPage;
+import org.red5.io.utils.ArrayUtils;
 import org.red5.io.utils.ObjectMap;
 import org.red5.io.utils.XMLUtils;
 import org.red5.server.service.ConversionUtils;
@@ -242,14 +244,15 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 	 */
 	public static String getString(ByteBuffer buf) {
 		int len = buf.getUnsignedShort();
+		log.debug("Length: {}", len);
 		int limit = buf.limit();
+		log.debug("Limit: {}", limit);
 		final java.nio.ByteBuffer strBuf = buf.buf();
-		// if(log.isDebugEnabled()) {
-		// log.debug("len: "+len);
-		// }
-		// log.info("limit: "+strBuf.position() + len);
-		strBuf.limit(strBuf.position() + len);
+		int pos = strBuf.position();
+		log.debug("String buf - position: {} limit: {}", pos, (pos + len));
+		strBuf.limit(pos + len);
 		final String string = AMF.CHARSET.decode(strBuf).toString();
+		log.debug("String: {}", string);
 		buf.limit(limit); // Reset the limit
 		return string;
 	}
@@ -277,13 +280,28 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 
 	// Array
 
+	@SuppressWarnings("unchecked")
 	public Object readArray(Deserializer deserializer, Type target) {
+		log.debug("readArray - deserializer: {} target: {}", deserializer, target);
+		Object result = null;
 		int count = buf.getInt();
-		List<Object> result = new ArrayList<Object>(count);
+		log.debug("Count: {}", count);
+		List<Object> resultCollection = new ArrayList<Object>(count);
 		storeReference(result);
 		for (int i=0; i<count; i++) {
-			result.add(deserializer.deserialize(this, Object.class));
+			resultCollection.add(deserializer.deserialize(this, Object.class));
 		}
+		// To maintain conformance to the Input API, we should convert the output
+		// into an Array if the Type asks us to.
+        Class<?> collection = Collection.class;
+        if (target instanceof Class) {
+        	collection = (Class) target;
+        }
+        if (collection.isArray()) {
+            result = ArrayUtils.toArray(collection.getComponentType(), resultCollection);
+        } else {
+        	result = resultCollection;
+        }
 		return result;
 	}
 
@@ -324,6 +342,9 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 		log.debug("Read start mixed array: {}", maxNumber);
 		Object result;
 		final Map<Object, Object> mixedResult = new LinkedHashMap<Object, Object>(maxNumber);
+		// we must store the reference before we deserialize any items in it to ensure
+		// that reference IDs are correct
+		int reference = storeReference(mixedResult);
 		while (hasMoreProperties()) {
 			String key = getString(buf);
 			log.debug("key: {}", key);
@@ -350,7 +371,8 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 			}
 			result = mixedResult;
 		}
-		storeReference(result);
+		// Replace the original reference with the final result
+		storeReference(reference, result);
 		skipEndObject();
 		return result;
 	}
@@ -365,7 +387,7 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 	 * @return Object          New object instance (for given class)
 	 */
 	protected Object newInstance(String className) {
-		log.info("Loading class: {}", className);
+		log.debug("Loading class: {}", className);
 		Object instance = null;
 		try {
 			Class<?> clazz = Thread.currentThread().getContextClassLoader()
@@ -514,7 +536,6 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 		// skip two marker bytes
 		// then end of object byte
 		buf.skip(3);
-		// byte nextType = buf.get();
 	}
 
 	// Others
@@ -560,28 +581,15 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 	 * @return Object       Read reference to object
 	 */
 	public Object readReference(Type target) {
-		if (referenceMode == ReferenceMode.MODE_RTMP) {
-			return getReference(buf.getUnsignedShort() - 1);
-		} else {
-			return getReference(buf.getUnsignedShort());
-		}
-	}
-
-	/**
-	 * Resets map and set mode to handle references
-	 *
-	 * @param mode mode to handle references
-	 */
-	public void reset(ReferenceMode mode) {
-		this.clearReferences();
-		referenceMode = mode;
+		return getReference(buf.getUnsignedShort());
 	}
 
 	/**
 	 * Resets map
+	 *
 	 */
 	public void reset() {
-		reset(ReferenceMode.MODE_RTMP);
+		this.clearReferences();
 	}
 
     protected Type getPropertyType(Object instance, String propertyName) {

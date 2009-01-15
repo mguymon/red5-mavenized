@@ -29,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.management.ObjectName;
 
+import org.apache.mina.common.ByteBuffer;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.IScope;
 import org.red5.server.api.Red5;
@@ -214,7 +215,9 @@ public class ClientBroadcastStream extends AbstractClientStream implements
 		if (livePipe != null) {
 			livePipe.unsubscribe((IProvider) this);
 		}
-		recordPipe.unsubscribe((IProvider) this);
+		if (recordPipe != null) {
+			recordPipe.unsubscribe((IProvider) this);
+		}
 		if (recording) {
 			sendRecordStopNotify();
 		}
@@ -260,6 +263,12 @@ public class ClientBroadcastStream extends AbstractClientStream implements
 		if (firstPacketTime == -1) {
 			firstPacketTime = rtmpEvent.getTimestamp();
 		}
+		//get the buffer only once per call
+		ByteBuffer buf = null;
+		if (rtmpEvent instanceof IStreamData
+				&& (buf = ((IStreamData) rtmpEvent).getData()) != null) {
+			bytesReceived += buf.limit();
+		}
 		if (rtmpEvent instanceof AudioData) {
 			if (info != null) {
 				info.setHasAudio(true);
@@ -273,8 +282,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements
 		} else if (rtmpEvent instanceof VideoData) {
 			IVideoStreamCodec videoStreamCodec = null;
 			if (videoCodecFactory != null && checkVideoCodec) {
-				videoStreamCodec = videoCodecFactory
-						.getVideoCodec(((VideoData) rtmpEvent).getData());
+				videoStreamCodec = videoCodecFactory.getVideoCodec(buf);
 				if (codecInfo instanceof StreamCodecInfo) {
 					((StreamCodecInfo) codecInfo)
 							.setVideoCodec(videoStreamCodec);
@@ -285,7 +293,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements
 			}
 
 			if (videoStreamCodec != null) {
-				videoStreamCodec.addData(((VideoData) rtmpEvent).getData());
+				videoStreamCodec.addData(buf);
 			}
 
 			if (info != null) {
@@ -296,13 +304,15 @@ public class ClientBroadcastStream extends AbstractClientStream implements
 			} else {
 				videoTime = rtmpEvent.getTimestamp();
 			}
-			eventTime = videoTime;
+			eventTime = videoTime;		
 		} else if (rtmpEvent instanceof Invoke) {
 			if (rtmpEvent.getHeader().isTimerRelative()) {
 				dataTime += rtmpEvent.getTimestamp();
 			} else {
 				dataTime = rtmpEvent.getTimestamp();
 			}
+			//do we want to return from here?
+			//event / stream listeners will not be notified of invokes
 			return;
 		} else if (rtmpEvent instanceof Notify) {
 			if (rtmpEvent.getHeader().isTimerRelative()) {
@@ -311,11 +321,6 @@ public class ClientBroadcastStream extends AbstractClientStream implements
 				dataTime = rtmpEvent.getTimestamp();
 			}
 			eventTime = dataTime;
-		}
-
-		if (rtmpEvent instanceof IStreamData
-				&& ((IStreamData) rtmpEvent).getData() != null) {
-			bytesReceived += ((IStreamData) rtmpEvent).getData().limit();
 		}
 
 		// Notify event listeners
@@ -328,8 +333,14 @@ public class ClientBroadcastStream extends AbstractClientStream implements
 		try {
 			if (livePipe != null) {
 				livePipe.pushMessage(msg);
+			} else {
+				log.debug("Live pipe was null, message was not pushed");
 			}
-			recordPipe.pushMessage(msg);
+			if (recordPipe != null) {
+				recordPipe.pushMessage(msg);
+			} else {
+				log.debug("Record pipe was null, message was not pushed");
+			}
 		} catch (IOException err) {
 			sendRecordFailedNotify(err.getMessage());
 			stop();
@@ -341,7 +352,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements
 				try {
 					listener.packetReceived(this, (IStreamPacket) rtmpEvent);
 				} catch (Exception e) {
-					log.error("Error while notifying listener " + listener, e);
+					log.error("Error while notifying listener {}", listener, e);
 				}
 			}
 		}
@@ -412,7 +423,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements
 			try {
 				handler.streamBroadcastClose(this);
 			} catch (Throwable t) {
-				log.error("error notify streamBroadcastStop", t);
+				log.error("Error in notifyBroadcastClose", t);
 			}
 		}
 	}
@@ -426,7 +437,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements
 			try {
 				handler.streamBroadcastStart(this);
 			} catch (Throwable t) {
-				log.error("error notify streamBroadcastStart", t);
+				log.error("Error in notifyBroadcastStart", t);
 			}
 		}
 	}
@@ -440,7 +451,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements
 			setChunkSize.setTarget("ConnectionConsumer");
 			setChunkSize.setServiceName("chunkSize");
 			if (setChunkSize.getServiceParamMap() == null) {
-				setChunkSize.setServiceParamMap(new HashMap());
+				setChunkSize.setServiceParamMap(new HashMap<String, Object>());
 			}
 			setChunkSize.getServiceParamMap().put("chunkSize", chunkSize);
 			livePipe.sendOOBControlMessage(getProvider(), setChunkSize);
@@ -737,6 +748,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements
 	 * connects
 	 */
 	public void start() {
+		log.info("Stream start");
 		IConsumerService consumerManager = (IConsumerService) getScope()
 				.getContext().getBean(IConsumerService.KEY);
 		try {

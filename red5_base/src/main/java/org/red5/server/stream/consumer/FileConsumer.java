@@ -30,7 +30,6 @@ import org.red5.io.IStreamableFileService;
 import org.red5.io.ITag;
 import org.red5.io.ITagWriter;
 import org.red5.io.StreamableFileFactory;
-import org.red5.io.flv.IKeyFrameDataAnalyzer.KeyFrameMeta;
 import org.red5.io.flv.impl.FLVReader;
 import org.red5.io.flv.impl.Tag;
 import org.red5.server.api.IScope;
@@ -110,12 +109,11 @@ public class FileConsumer implements Constants, IPushableConsumer,
 
     /**
      * Push message through pipe
-     * Synchronize this method to avoid FLV corruption from abrupt disconnection
      * @param pipe         Pipe
      * @param message      Message to push
      * @throws IOException if message could not be written
      */
-    public void pushMessage(IPipe pipe, IMessage message) throws IOException {
+    public synchronized void pushMessage(IPipe pipe, IMessage message) throws IOException {
 		if (message instanceof ResetMessage) {
 			startTimestamp = -1;
 			offset += lastTimestamp;
@@ -155,6 +153,7 @@ public class FileConsumer implements Constants, IPushableConsumer,
 		    writer.writeTag(tag);
 		} catch (IOException e) {
 			log.error("error writing tag", e);
+			throw e;
 		}
 	}
 
@@ -165,7 +164,7 @@ public class FileConsumer implements Constants, IPushableConsumer,
      * @param pipe              Pipe that is used to transmit OOB message
      * @param oobCtrlMsg        OOB control message
      */
-    public void onOOBControlMessage(IMessageComponent source, IPipe pipe,
+    public synchronized void onOOBControlMessage(IMessageComponent source, IPipe pipe,
 			OOBControlMessage oobCtrlMsg) {
 		// TODO Auto-generated method stub
 	}
@@ -174,13 +173,13 @@ public class FileConsumer implements Constants, IPushableConsumer,
      * Pipe connection event handler
      * @param event       Pipe connection event
      */
-    public void onPipeConnectionEvent(PipeConnectionEvent event) {
+    public synchronized void onPipeConnectionEvent(PipeConnectionEvent event) {
 		switch (event.getType()) {
 			case PipeConnectionEvent.CONSUMER_CONNECT_PUSH:
 				if (event.getConsumer() != this) {
 					break;
 				}
-				Map paramMap = event.getParamMap();
+				Map<?, ?> paramMap = event.getParamMap();
 				if (paramMap != null) {
 					mode = (String) paramMap.get("mode");
 				}

@@ -32,12 +32,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.Red5;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.util.StringUtils;
 
 /**
  * Boot-straps Red5 using the latest available jars found in <i>red5.home/lib</i> directory.
@@ -55,7 +56,6 @@ public class Bootstrap {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-
 		//retrieve path elements from system properties
 		String root = getRed5Root();		
 		String conf = getConfigurationRoot(root);
@@ -86,10 +86,17 @@ public class Bootstrap {
 			throws InstantiationException, IllegalAccessException,
 			ClassNotFoundException, NoSuchMethodException,
 			InvocationTargetException {
-		ClassLoader parent = ClassLoader.getSystemClassLoader().getParent();
+				
+		ClassLoader parent = ClassLoader.getSystemClassLoader();
+
+		// pass urls to the ClassLoader
+		ClassLoader loader = new URLClassLoader(urls.toArray(new URL[0]), parent);
+
+		System.out.printf("Classloaders:\nParent %s\nSystem %s\nURL %s\n", parent.getParent(), parent, loader);
 		
-		// pass urls to a URLClassLoader
-		URLClassLoader loader = new URLClassLoader(urls.toArray(new URL[0]), parent);
+		// print the classpath
+		String classPath = System.getProperty("java.class.path");
+		System.out.printf("JVM classpath: %s\n", classPath);		
 				
 		// set the classloader to the current thread
 		Thread.currentThread().setContextClassLoader(loader);
@@ -97,7 +104,7 @@ public class Bootstrap {
 		// create a new instance of this class using new classloader
 		Object boot = loader.loadClass("org.red5.server.Bootstrap").newInstance();
 	
-		Method m1 = boot.getClass().getMethod("launch", new Class[]{ URLClassLoader.class });
+		Method m1 = boot.getClass().getMethod("launch", new Class[]{ ClassLoader.class });
 		m1.invoke(null, loader);
 	}
 
@@ -131,15 +138,15 @@ public class Bootstrap {
 		//look over the libraries and remove the old versions
 		scrubList(urls);
 		// add config dir
-		urls.add(new File(conf).toURI().toURL());
+		urls.add(new File(conf).toURI().toURL());		
 		//
 		System.out.printf("%d items in the classpath\n", urls.size());
 		
 		//loop thru all the current urls
-		//System.out.println("Classpath: ");
-		//for (URL url : urls) {
-		//	System.out.println(url.toExternalForm());
-		//}
+		System.out.println("Classpath: ");
+		for (URL url : urls) {
+			System.out.println(url.toExternalForm());
+		}
 		return urls;
 	}
 
@@ -182,7 +189,7 @@ public class Bootstrap {
 		
 		//set conf sysprop
 		System.setProperty("red5.config_root", conf);
-		System.out.println("Configuation root: " + conf);
+		System.out.printf("Configuation root: %s\n", conf);
 		return conf;
 	}
 
@@ -195,31 +202,23 @@ public class Bootstrap {
 	private static String getRed5Root() throws IOException {
 		// look for red5 root first as a system property
 		String root = System.getProperty("red5.root");
-
+		// if root is null check environmental
+		if (root == null) {
+			//check for env variable
+			root = System.getenv("RED5_HOME");
+		}		
 		// if root is null find out current directory and use it as root
 		if (root == null || ".".equals(root)) {
 			root = System.getProperty("user.dir");
-//			File here = new File("thisisadummyfile");
-//			if (!here.createNewFile()) {
-//				System.err.println("Could not determine current directory");
-//				System.exit(1);
-//			} else {
-//				root = here.getCanonicalPath().replaceFirst("thisisadummyfile",
-//						"");
-				System.out.printf("Current directory: %s\n", root);
-//				if (!here.delete()) {
-//					here.deleteOnExit();
-//				}
-//				here = null;
-				//flip slashes
-				root = root.replaceAll("\\\\", "/");
-				//drop last slash if exists
-				if (root.charAt(root.length()-1) == '/') {
-					root = root.substring(0, root.length() - 1);
-				}
-				//set property
-				System.setProperty("red5.root", root);
-		//	}
+			System.out.printf("Current directory: %s\n", root);
+			//flip slashes
+			root = root.replaceAll("\\\\", "/");
+			//drop last slash if exists
+			if (root.charAt(root.length()-1) == '/') {
+				root = root.substring(0, root.length() - 1);
+			}
+			//set property
+			System.setProperty("red5.root", root);
 		}
 		
 		System.out.printf("Red5 root: %s\n", root);
@@ -231,29 +230,33 @@ public class Bootstrap {
 	 * 
 	 * @param loader
 	 */
-	public static void launch(URLClassLoader loader) {
+	public static void launch(ClassLoader loader) {
 		System.setProperty("red5.deployment.type", "bootstrap");
 		try {	
-			//set to use our logger
-			System.setProperty("logback.ContextSelector", "org.red5.logging.LoggingContextSelector");
+			//check system property before forcing out selector
+			if (System.getProperty("logback.ContextSelector") == null) {
+				//set to use our logger
+				System.setProperty("logback.ContextSelector", "org.red5.logging.LoggingContextSelector");
+			}
 			//install the slf4j bridge (mostly for JUL logging)
 			SLF4JBridgeHandler.install();
 			//we create the logger here so that it is instanced inside the expected 
 			//classloader
-			Logger log = LoggerFactory.getLogger(Bootstrap.class);
+			Logger log = Red5LoggerFactory.getLogger(Bootstrap.class);
+		    //version info banner
+			log.info("{} (http://www.osflash.org/red5)", Red5.getVersion());
 			//see which logger binder has been instanced
 			log.debug("Logger binder: {}", StaticLoggerBinder.getSingleton().getClass().getName());
 			//set default for loading classes with url loader
 			loader.setDefaultAssertionStatus(false);
-			//create a logger before anything else happens
-			log.info("{} (http://www.osflash.org/red5)", Red5.getVersion());
 			//create red5 app context
 			FileSystemXmlApplicationContext ctx = new FileSystemXmlApplicationContext(new String[]{
 					"classpath:/red5.xml"}, false);
 			ctx.setClassLoader(loader);
+			//refresh must be called before accessing the bean factory
 			ctx.refresh();
+			//set our loader
 			ctx.getBeanFactory().setBeanClassLoader(loader);
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -266,6 +269,7 @@ public class Bootstrap {
 	 * @param list
 	 */
 	private final static void scrubList(List<URL> list) {
+		String ALPHABET = "abcdefghijklmnopqrstuvwxyz";
 		Pattern punct = Pattern.compile("\\p{Punct}");
 		Set<URL> removalList = new HashSet<URL>(list.size());
 		String topName = null;
@@ -393,9 +397,37 @@ public class Bootstrap {
     			
     			//check major
     			String[] topVersion = punct.split(topVers);
-    			String[] checkVersion = punct.split(checkVers);
     			
-                System.err.println("topVersion (" + topVers + "): " + topVersion[0]);
+                //System.err.println("topVersion (" + topVers + "): " + topVersion[0]);
+    			//check 3rd part of version for letters
+    			if (topVersion.length > 2) {
+    				String v = topVersion[2].toLowerCase();
+    				if (v.length() > 1) {
+    					topVersion[2] = StringUtils.deleteAny(v, ALPHABET);
+    				} else {
+    					//if is a only a letter use its index as a version
+    					char ch = v.charAt(0);
+    					if (!Character.isDigit(ch)) {
+    						topVersion[2] = ALPHABET.indexOf(ch) + "";
+    					}
+    				}
+    			}
+    			
+    			String[] checkVersion = punct.split(checkVers);
+    			//check 3rd part of version for letters
+    			if (checkVersion.length > 2) {
+    				String v = checkVersion[2].toLowerCase();
+    				if (v.length() > 1) {
+    					checkVersion[2] = StringUtils.deleteAny(v, ALPHABET);
+    				} else {
+    					//if is a only a letter use its index as a version
+    					char ch = v.charAt(0);
+    					if (!Character.isDigit(ch)) {
+    						checkVersion[2] = ALPHABET.indexOf(ch) + "";
+    					}
+    				}
+    			}
+    			
     			int topVersionNumber = Integer.valueOf(topVersion[0] + topVersion[1] + (topVersion.length > 2 ? topVersion[2] : '0')).intValue();
     			int checkVersionNumber = Integer.valueOf(checkVersion[0] + checkVersion[1] + (checkVersion.length > 2 ? checkVersion[2] : '0')).intValue();
     			

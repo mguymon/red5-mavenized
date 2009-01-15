@@ -67,6 +67,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A play engine for playing an IPlayItem.
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Steven Gong
+ * @author Paul Gregoire (mondain@gmail.com)
  */
 public final class PlayEngine implements IFilter, IPushableConsumer,
 		IPipeConnectionListener, ITokenBucketCallback {
@@ -113,7 +117,10 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 
 	private boolean waiting;
 
-	private int vodStartTS;
+	/**
+	 * timestamp of first sent packet
+	 */
+	private int streamStartTS;
 
 	private IPlayItem currentItem;
 
@@ -294,10 +301,10 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 			msgIn.unsubscribe(this);
 			msgIn = null;
 		}
+		// -2: live than recorded, -1: live, >=0: recorded
 		int type = (int) (item.getStart() / 1000);
 		// see if it's a published stream
 		IScope thisScope = playlistSubscriberStream.getScope();
-		//
 		String itemName = item.getName();
 		//check for input and type
 		IProviderService.INPUT_TYPE sourceType = providerService.lookupProviderInput(thisScope, itemName);
@@ -335,7 +342,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 				}
 				break;
 		}
-		//
+		log.debug("play decision is {}", decision);
 		currentItem = item;
 		long itemLength = item.getLength();
 		switch (decision) {
@@ -413,12 +420,12 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 		playlistSubscriberStream.state = State.PLAYING;
 		IMessage msg = null;
 		streamOffset = 0;
+		streamStartTS = -1;
 		if (decision == 1) {
 			if (withReset) {
 				releasePendingMessage();
 			}
 			sendVODInitCM(msgIn, item);
-			vodStartTS = -1;
 			// Don't use pullAndPush to detect IOExceptions prior to sending
 			// NetStream.Play.Start
 			if (item.getStart() > 0) {
@@ -876,11 +883,15 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 	 * @param message        RTMP message
 	 */
 	private void sendMessage(RTMPMessage message) {
-		if (vodStartTS == -1) {
-			vodStartTS = message.getBody().getTimestamp();
+		log.debug("sendMessage: streamStartTS={}, length={}, streamOffset={}, timestamp={}",
+				new Object[]{streamStartTS, currentItem.getLength(), streamOffset,
+						message.getBody().getTimestamp()});
+		if (streamStartTS == -1) {
+			log.debug("sendMessage: resetting streamStartTS");
+			streamStartTS = message.getBody().getTimestamp();
 		} else {
 			if (currentItem.getLength() >= 0) {
-				int duration = message.getBody().getTimestamp() - vodStartTS;
+				int duration = message.getBody().getTimestamp() - streamStartTS;
 				if (duration - streamOffset >= currentItem.getLength()) {
 					// Sent enough data to client
 					stop();
@@ -889,7 +900,8 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 			}
 		}
 		lastMessage = message.getBody();
-		if (lastMessage instanceof IStreamData) {
+		if (lastMessage instanceof IStreamData 
+				&& ((IStreamData) lastMessage).getData() != null) {
 			bytesSent += ((IStreamData) lastMessage).getData().limit();
 		}
 		doPushMessage(message);
@@ -942,7 +954,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 		Status reset = new Status(StatusCodes.NS_PLAY_RESET);
 		reset.setClientid(streamId);
 		reset.setDetails(item.getName());
-		reset.setDesciption("Playing and resetting " + item.getName() + '.');
+		reset.setDesciption(String.format("Playing and resetting %s.", item.getName()));
 
 		StatusMessage resetMsg = new StatusMessage();
 		resetMsg.setBody(reset);
@@ -957,7 +969,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 		Status start = new Status(StatusCodes.NS_PLAY_START);
 		start.setClientid(streamId);
 		start.setDetails(item.getName());
-		start.setDesciption("Started playing " + item.getName() + '.');
+		start.setDesciption(String.format("Started playing %s.", item.getName()));
 
 		StatusMessage startMsg = new StatusMessage();
 		startMsg.setBody(start);
@@ -971,7 +983,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 	private void sendStopStatus(IPlayItem item) {
 		Status stop = new Status(StatusCodes.NS_PLAY_STOP);
 		stop.setClientid(streamId);
-		stop.setDesciption("Stopped playing " + item.getName() + ".");
+		stop.setDesciption(String.format("Stopped playing %s.", item.getName()));
 		stop.setDetails(item.getName());
 
 		StatusMessage stopMsg = new StatusMessage();
@@ -1032,8 +1044,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 		Status seek = new Status(StatusCodes.NS_SEEK_NOTIFY);
 		seek.setClientid(streamId);
 		seek.setDetails(item.getName());
-		seek.setDesciption("Seeking " + position + " (stream ID: "
-				+ streamId + ").");
+		seek.setDesciption(String.format("Seeking %d (stream ID: %d).", position, streamId));
 
 		StatusMessage seekMsg = new StatusMessage();
 		seekMsg.setBody(seek);
@@ -1137,7 +1148,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 		OOBControlMessage oobCtrlMsg = new OOBControlMessage();
 		oobCtrlMsg.setTarget(IPassive.KEY);
 		oobCtrlMsg.setServiceName("init");
-		Map<Object, Object> paramMap = new HashMap<Object, Object>();
+		Map<String, Object> paramMap = new HashMap<String, Object>();
 		paramMap.put("startTS", (int) item.getStart());
 		oobCtrlMsg.setServiceParamMap(paramMap);
 		msgIn.sendOOBControlMessage(this, oobCtrlMsg);
@@ -1153,7 +1164,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 		OOBControlMessage oobCtrlMsg = new OOBControlMessage();
 		oobCtrlMsg.setTarget(ISeekableProvider.KEY);
 		oobCtrlMsg.setServiceName("seek");
-		Map<Object, Object> paramMap = new HashMap<Object, Object>();
+		Map<String, Object> paramMap = new HashMap<String, Object>();
 		paramMap.put("position", position);
 		oobCtrlMsg.setServiceParamMap(paramMap);
 		msgIn.sendOOBControlMessage(this, oobCtrlMsg);
@@ -1238,9 +1249,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 			RTMPMessage rtmpMessage = (RTMPMessage) message;
 			IRTMPEvent body = rtmpMessage.getBody();
 			if (!(body instanceof IStreamData)) {
-				throw new RuntimeException("expected IStreamData but got "
-						+ body.getClass() + " (type " + body.getDataType()
-						+ ")");
+				throw new RuntimeException(String.format("Expected IStreamData but got %s (type %s)", body.getClass(), body.getDataType()));
 			}
 
 			int size = ((IStreamData) body).getData().limit();
@@ -1254,7 +1263,8 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 					}
 				}
 
-				if (videoCodec == null || videoCodec.canDropFrames()) {
+				//dont try to drop frames if video codec is null - related to SN-77
+				if (videoCodec != null && videoCodec.canDropFrames()) {
 					if (playlistSubscriberStream.state == State.PAUSED) {
 						// The subscriber paused the video
 						videoFrameDropper.dropPacket(rtmpMessage);
@@ -1277,8 +1287,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 						return;
 					}
 
-					//Long[] writeDelta = getWriteDelta();
-					if (pendingVideos > 1 /*|| writeDelta[0] > writeDelta[1]*/) {
+					if (pendingVideos > 1) {
 						// We drop because the client has insufficient bandwidth.
 						long now = System.currentTimeMillis();
 						if (bufferCheckInterval > 0
@@ -1310,13 +1319,10 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 					return;
 				}
 			}
-			if (body instanceof IStreamData
-					&& ((IStreamData) body).getData() != null) {
-				bytesSent += ((IStreamData) body).getData().limit();
-			}
-			lastMessage = body;
+			sendMessage(rtmpMessage);
+		} else {
+			msgOut.pushMessage(message);
 		}
-		msgOut.pushMessage(message);
 	}
 
 	/** {@inheritDoc} */
@@ -1366,24 +1372,6 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 	private long pendingMessages() {
 		return playlistSubscriberStream.getConnection().getPendingMessages();
 	}
-
-	/**
-	 * Get informations about bytes send and number of bytes the client reports
-	 * to have received.
-	 * 
-	 * @return          Written bytes and number of bytes the client received
-	 */
-//	private Long[] getWriteDelta() {
-//		OOBControlMessage pendingRequest = new OOBControlMessage();
-//		pendingRequest.setTarget("ConnectionConsumer");
-//		pendingRequest.setServiceName("writeDelta");
-//		msgOut.sendOOBControlMessage(this, pendingRequest);
-//		if (pendingRequest.getResult() != null) {
-//			return (Long[]) pendingRequest.getResult();
-//		} else {
-//			return new Long[] { Long.valueOf(0), Long.valueOf(0) };
-//		}
-//	}	
 	
 	public boolean isPullMode() {
 		return pullMode;

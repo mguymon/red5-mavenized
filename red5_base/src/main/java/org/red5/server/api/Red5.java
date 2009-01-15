@@ -23,10 +23,10 @@ import java.lang.ref.WeakReference;
 
 /**
  * Utility class for accessing Red5 API objects.
- * 
+ *    
  * This class uses a thread local, and will be setup by the service invoker.
  * 
- * The code below shows various uses.
+ * The code below shows various uses. 
  * <p>
  * <code> 
  * IConnection conn = Red5.getConnectionLocal();<br /> 
@@ -34,13 +34,13 @@ import java.lang.ref.WeakReference;
  * IScope scope = r5.getScope();<br />
  * conn = r5.getConnection();<br /> 
  * r5 = new Red5(conn);<br />
- * IClient client = r5.getClient();<br />
+ * IClient client = r5.getClient();<br /> 
  * </code>
  * </p>  
- *  
+ *   
  * @author The Red5 Project (red5@osflash.org) 
  * @author Luke Hubbard (luke@codegent.com)  
- * @author Paul Gregoire (mondain@gmail.com)  
+ * @author Paul Gregoire (mondain@gmail.com)   
  */
 public final class Red5 implements Red5MBean {
 
@@ -59,7 +59,7 @@ public final class Red5 implements Red5MBean {
     /**
      * Current server version with revision
      */
-    public static final String VERSION = "Red5 Server 0.8.0-RC1 $Revision: 3116 $";
+    public static final String VERSION = "Red5 Server 0.8.0-RC1 $Revision: 3368 $";
 
     /**
      * Current server version for fmsVer requests

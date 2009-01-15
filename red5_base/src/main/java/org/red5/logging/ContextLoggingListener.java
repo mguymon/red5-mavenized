@@ -1,6 +1,23 @@
 package org.red5.logging;
 
-import java.util.List;
+/*
+ * RED5 Open Source Flash Server - http://www.osflash.org/red5
+ * 
+ * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License as published by the Free Software 
+ * Foundation; either version 2.1 of the License, or (at your option) any later 
+ * version. 
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License along 
+ * with this library; if not, write to the Free Software Foundation, Inc., 
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ */
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -31,16 +48,14 @@ public class ContextLoggingListener implements ServletContextListener {
 		System.out.println("Context destroying...");
 
 		String contextName = pathToName(event);
-		System.out.printf("About to detach context named %s\n", contextName);
+		//System.out.printf("About to detach context named %s\n", contextName);
 
 		ContextSelector selector = StaticLoggerBinder.getSingleton().getContextSelector();
 		LoggerContext context = selector.detachLoggerContext(contextName);
 		if (context != null) {
 			Logger logger = context.getLogger(LoggerContext.ROOT_NAME);
-			logger.info("Shutting down context {}", contextName);
-			//context.shutdownAndReset();
+			logger.debug("Shutting down context {}", contextName);
 			context.reset();
-			context.stop();
 		} else {
 			System.err.printf("No context named %s was found", contextName);
 		}
@@ -62,22 +77,24 @@ public class ContextLoggingListener implements ServletContextListener {
 			LoggerContext context = selector.getLoggerContext();
 			if (context != null) {
 				Logger logger = context.getLogger(LoggerContext.ROOT_NAME);
-				logger.info("Starting up context {}", contextName);
+				logger.debug("Starting up context {}", contextName);
 			} else {
 				System.err.printf("No context named %s was found", contextName);
 			}
 			
-			List<String> ctxNameList = selector.getContextNames();
-			for (String s : ctxNameList) {
-				System.out.printf("Selector context name: %s\n", s);
-			}			
+			//List<String> ctxNameList = selector.getContextNames();
+			//for (String s : ctxNameList) {
+			//	System.out.printf("Selector context name: %s\n", s);
+			//}			
 			
 		} catch (Exception e) {
-			System.err.println("LoggingContextSelector is not the correct type");
+			//System.err.println("LoggingContextSelector is not the correct type");
 			e.printStackTrace();
 		} finally {
 			//reset the name
-			selector.setContextName(null);
+			if (selector != null) {
+				selector.setContextName(null);
+			}
 		}
 
 	}

@@ -1,5 +1,24 @@
 package org.red5.server.net.rtmp;
 
+/*
+ * RED5 Open Source Flash Server - http://www.osflash.org/red5
+ * 
+ * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License as published by the Free Software 
+ * Foundation; either version 2.1 of the License, or (at your option) any later 
+ * version. 
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License along 
+ * with this library; if not, write to the Free Software Foundation, Inc., 
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ */
+
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
@@ -19,10 +38,8 @@ import org.slf4j.LoggerFactory;
  * compatibility with Flash 9,0,124,0. Clients that require this send a nonzero
  * value as the fifth byte of the handshake request.
  * 
- * <br />
- * 
+ * <br/>
  * This class is based on the Ruby handshaking code from Takuma Mori.
- * 
  * <br />
  * 
  * @author Jacinto Shy II (jacinto.m.shy@ieee.org)
@@ -387,16 +404,26 @@ public class RTMPHandshake {
 	public ByteBuffer generateResponse(ByteBuffer input) {
 		ByteBuffer output = ByteBuffer
 				.allocate((Constants.HANDSHAKE_SIZE * 2) + 1);
+		input.mark();
+		input.position(input.position() + 4);
+		byte input4 = input.get();
+		input.reset();
+		input.mark();
 		byte[] newKeyPart = getNewKeyPart(input);
+		input.reset();
 		byte[] newKey = calculateHMAC_SHA256(newKeyPart, SECRET_KEY);
 		byte[] randBytes = new byte[Constants.HANDSHAKE_SIZE - 32];
 		random.nextBytes(randBytes);
 		byte[] hashedBytes = calculateHMAC_SHA256(randBytes, newKey);
 		byte[] byteChunk = new byte[Constants.HANDSHAKE_SIZE];
 
-		System.arraycopy(randBytes, 0, byteChunk, 0, randBytes.length);
-		System.arraycopy(hashedBytes, 0, byteChunk, randBytes.length,
+		if (input4 != 0) {
+			System.arraycopy(randBytes, 0, byteChunk, 0, randBytes.length);
+			System.arraycopy(hashedBytes, 0, byteChunk, randBytes.length,
 				hashedBytes.length);
+		} else {
+			input.get(byteChunk);
+		}
 		output.put((byte) 0x03);
 		output.put(HANDSHAKE_SERVER_BYTES);
 		output.put(byteChunk);
@@ -424,7 +451,7 @@ public class RTMPHandshake {
 		byte[] inputArray = new byte[input.remaining()];
 
 		input.get(inputArray, 0, input.remaining());
-		int index = Math.abs((inputArray[8] + inputArray[9] + inputArray[10] + inputArray[11])) % 728 + 12;
+		int index = ((inputArray[8]&0x0ff) + (inputArray[9]&0x0ff) + (inputArray[10]&0x0ff) + (inputArray[11]&0x0ff)) % 728 + 12;
 		System.arraycopy(inputArray, index, part, 0, 32);
 		return part;
 	}

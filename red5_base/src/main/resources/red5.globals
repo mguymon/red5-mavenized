@@ -1,1 +1,1 @@
-default.context=classpath:/red5-default.xml
+default.context=classpath:red5-default.xml

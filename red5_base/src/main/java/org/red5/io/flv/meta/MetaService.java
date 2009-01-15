@@ -54,6 +54,7 @@ public class MetaService implements IMetaService {
 	/**
 	 * File input stream
 	 */
+	@SuppressWarnings("unused")
 	private FileInputStream fis;
 
 	/**
@@ -136,7 +137,7 @@ public class MetaService implements IMetaService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void write(IMetaData meta) throws IOException {
+	public void write(IMetaData<?, ?> meta) throws IOException {
 		// Get cue points, FLV reader and writer
 		IMetaCue[] metaArr = meta.getMetaCue();
 		FLVReader reader = new FLVReader(file, false);
@@ -218,7 +219,8 @@ public class MetaService implements IMetaService {
 	 *            Second metadata object
 	 * @return Merged metadata
 	 */
-	private IMeta mergeMeta(IMetaData metaData, IMetaData md) {
+	@SuppressWarnings("unused")
+	private IMeta mergeMeta(IMetaData<?, ?> metaData, IMetaData<?, ?> md) {
 		return new Resolver().resolve(metaData, md);
 	}
 
@@ -231,7 +233,7 @@ public class MetaService implements IMetaService {
 	 *            Tag
 	 * @return New tag with injected metadata
 	 */
-	private ITag injectMetaData(IMetaData meta, ITag tag) {
+	private ITag injectMetaData(IMetaData<?, ?> meta, ITag tag) {
 
 		ByteBuffer bb = ByteBuffer.allocate(1000);
 		bb.setAutoExpand(true);
@@ -294,8 +296,8 @@ public class MetaService implements IMetaService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void writeMetaData(IMetaData metaData) {
-		IMetaCue meta = (MetaCue) metaData;
+	public void writeMetaData(IMetaData<?, ?> metaData) {
+		IMetaCue meta = (MetaCue<?, ?>) metaData;
 		Output out = new Output(ByteBuffer.allocate(1000));
 		serializer.serialize(out, "onCuePoint");
 		serializer.serialize(out, meta);
@@ -336,15 +338,14 @@ public class MetaService implements IMetaService {
 
 	/** {@inheritDoc} */
 	// TODO need to fix
-	public MetaData readMetaData(ByteBuffer buffer) {
-		MetaData retMeta = new MetaData();
+	public MetaData<?, ?> readMetaData(ByteBuffer buffer) {
+		MetaData<?, ?> retMeta = new MetaData<String, Object>();
 		Input input = new Input(buffer);
 		if (deserializer == null) {
 		    deserializer = new Deserializer();
 		}
-		@SuppressWarnings("unused") 
 		String metaType = deserializer.deserialize(input, String.class);
-		Map m = deserializer.deserialize(input, Map.class);
+		Map<String, ?> m = deserializer.deserialize(input, Map.class);
 		retMeta.putAll(m);
 		return retMeta;
 	}

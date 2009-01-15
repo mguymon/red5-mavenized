@@ -1,20 +1,37 @@
 package org.red5.server.crypto;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
+/*
+ * RED5 Open Source Flash Server - http://www.osflash.org/red5
+ * 
+ * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License as published by the Free Software 
+ * Foundation; either version 2.1 of the License, or (at your option) any later 
+ * version. 
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License along 
+ * with this library; if not, write to the Free Software Foundation, Inc., 
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ */
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.security.Key;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.red5.logging.Red5LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * HMAC - a little utility to compute HMACs on data; the data and key may be
@@ -29,51 +46,21 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class HMAC {
 
-	private File keyFile;
+	protected static Logger log = Red5LoggerFactory.getLogger(HMAC.class);	
 
-	private String keyString;
-
-	private byte[] keyBytes;
-
-	private File dataFile;
-
-	private String dataString;
-
-	private byte[] dataBytes;
-
-	protected Clipboard clip;
-
-	protected boolean verbose = false;
-
-	protected boolean noHex = false;
-
-	protected boolean reverse = false;
-
-	protected String alg = DEFAULT_ALG;
+	public static final String ALGORITHM_ID = "HMacMD5";	
 
 	public static final int MIN_LENGTH = 8;
 
 	public static final int BUF_LENGTH = 256;
 
-	public static final String DEFAULT_ALG = "HMacMD5";
+	private byte[] keyBytes;
 
-	/**
-	 * Send a message to the user, with an exception.
-	 */
-	public static final void message(String s, Exception e) {
-		System.err.println("hmac: " + s);
-		if (e != null) {
-			System.err.println("\texception was: " + e);
-			e.printStackTrace(System.err);
-		}
-	}
+	private byte[] dataBytes;
 
-	/**
-	 * Send a message to the user, no exception.
-	 */
-	public static final void message(String s) {
-		message(s, null);
-	}
+	protected boolean noHex = false;
+
+	protected boolean reverse = false;
 
 	/**
 	 * Return true if the input argument character is a digit, a space, or A-F.
@@ -102,8 +89,9 @@ public class HMAC {
 	 */
 	public static final boolean isHex(byte[] sampleData, int len) {
 		for (int i = 0; i < len; i++) {
-			if (!isHexStringChar((char) (sampleData[i])))
+			if (!isHexStringChar((char) (sampleData[i]))) {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -127,13 +115,15 @@ public class HMAC {
 				acc.append(s[cx]);
 				ff++;
 			} else {
-				if ((ff % 2) > 0)
+				if ((ff % 2) > 0) {
 					acc.append('0');
+				}
 				ff = 0;
 			}
 		}
-		if ((ff % 2) > 0)
+		if ((ff % 2) > 0) {
 			acc.append('0');
+		}
 		// System.out.println("Intermediate SB value is '" + acc.toString() +
 		// "'");
 
@@ -183,8 +173,6 @@ public class HMAC {
 	 */
 	public byte[] readDataFile(File f, int minValidLength) {
 		InputStream fr = null;
-		byte[] buf = null;
-		int cc;
 		try {
 			if (f.getName().equals("-")) {
 				fr = System.in;
@@ -192,11 +180,10 @@ public class HMAC {
 				fr = new FileInputStream(f);
 			}
 		} catch (IOException ie) {
-			message("Could not read file " + f, ie);
+			log.warn("Could not read file {}", f, ie);
 			return null;
 		}
-		if (verbose)
-			message("Reading file data from " + f);
+		log.debug("Reading file data from {}", f);
 		return readDataStream(fr, minValidLength);
 	}
 
@@ -209,7 +196,7 @@ public class HMAC {
 			if (cc < minValidLength)
 				return null;
 		} catch (IOException ie) {
-			message("Could not read initial data", ie);
+			log.warn("Could not read initial data", ie);
 			try {
 				is.close();
 			} catch (Exception e) {
@@ -227,7 +214,7 @@ public class HMAC {
 				if (cc > 0)
 					baos.write(buf, 0, cc);
 			} catch (IOException ie) {
-				message("Error read stream data", ie);
+				log.warn("Error read stream data", ie);
 				try {
 					is.close();
 				} catch (Exception e) {
@@ -241,54 +228,12 @@ public class HMAC {
 		} catch (IOException ie2) {
 		}
 
-		byte[] result;
-		result = baos.toByteArray();
-		if (verbose)
-			message("Read " + result.length + " bytes");
+		byte[] result = baos.toByteArray();
+		log.debug("Read {} bytes", result.length);
 		if (ishex) {
 			result = hexToByteArray(new String(result), reverse);
 		}
 
-		return result;
-	}
-
-	/**
-	 * Read hex data from the clipboard and process it into a byte array.
-	 */
-	public byte[] readDataClipboard() {
-		byte[] result = null;
-
-		try {
-			if (clip == null) {
-				clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-			}
-			Transferable contents;
-			contents = clip.getContents(null);
-			if (contents != null) {
-				StringReader sr;
-				sr = (StringReader) (contents
-						.getTransferData(DataFlavor.plainTextFlavor));
-				StringBuffer sb = new StringBuffer();
-				char[] buf = new char[BUF_LENGTH];
-				int cc;
-				do {
-					cc = sr.read(buf, 0, BUF_LENGTH);
-					if (cc > 0)
-						sb.append(buf, 0, cc);
-				} while (cc > 0);
-				String s = sb.toString();
-				if (verbose)
-					message("Got clipboard data: " + s);
-
-				result = s.getBytes();
-				boolean ishex = (noHex) ? (false) : (isHex(result, 16));
-				if (ishex) {
-					result = hexToByteArray(s, reverse);
-				}
-			}
-		} catch (Exception te) {
-			message("Transfer clipboard problem", te);
-		}
 		return result;
 	}
 
@@ -300,20 +245,20 @@ public class HMAC {
 		Mac hm = null;
 		byte[] result = null;
 
-		if (verbose) {
-			message("Key data: " + byteArrayToHex(keyBytes));
-			message("Hash data: " + byteArrayToHex(dataBytes));
-			message("Algorithm: " + alg);
+		if (log.isDebugEnabled()) {
+			log.debug("Key data: {}", byteArrayToHex(keyBytes));
+			log.debug("Hash data: {}", byteArrayToHex(dataBytes));
+			log.debug("Algorithm: {}", ALGORITHM_ID);
 		}
 
 		try {
-			hm = Mac.getInstance(alg);
+			hm = Mac.getInstance(ALGORITHM_ID);
 
-			Key k1 = new SecretKeySpec(keyBytes, 0, keyBytes.length, alg);
+			Key k1 = new SecretKeySpec(keyBytes, 0, keyBytes.length, ALGORITHM_ID);
 			hm.init(k1);
 			result = hm.doFinal(dataBytes);
 		} catch (Exception e) {
-			message("Bad algorithm or crypto library problem", e);
+			log.warn("Bad algorithm or crypto library problem", e);
 		}
 		return result;
 	}

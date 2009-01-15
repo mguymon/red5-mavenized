@@ -224,13 +224,15 @@ public class Context implements IContext, ApplicationContextAware, ContextMBean 
 	public void setApplicationContext(ApplicationContext context) {
 		this.applicationContext = context;
 		String deploymentType = System.getProperty("red5.deployment.type");
-		logger.debug("Deployment type: " + deploymentType);
 		
 		if ( deploymentType == null ) {
 			ExtendedPropertyPlaceholderConfigurer configurer = 
 				(ExtendedPropertyPlaceholderConfigurer)applicationContext.getBean( "placeholderConfig" );
 			deploymentType = configurer.getProperties().getProperty( "red5.deployment.type" );
 		}
+		
+		logger.debug("Deployment type: " + deploymentType);
+		
 		if (deploymentType == null) {
 			// standalone core context
 			String config = System.getProperty("red5.conf_file");

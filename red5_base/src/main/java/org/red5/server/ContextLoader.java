@@ -37,7 +37,6 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.Resource;
 
@@ -136,10 +135,9 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 		for (Object key : props.keySet()) {
 			String name = (String) key;
 			String config = props.getProperty(name);
-			
-			/**
-			 * Disable references to red5.root and red5.config_root
-			// TODO: we should support arbitrary property substitution
+			/** 
+			 *  DISABLED
+			 * TODO: we should support arbitrary property substitution
 			config = config.replace("${red5.root}", System
 					.getProperty("red5.root"));
 			config = config.replace("${red5.config_root}", System
@@ -168,62 +166,59 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 	 *            Filename
 	 */
 	public void loadContext(String name, String config) {
-			log.debug("Load context - name: {} config: {}", name, config);
-			//check the existence of the config file
-			
-			if ( !config.startsWith( "classpath:" ) ) {
-				try {
-					File configFile = new File(config);
+		log.debug("Load context - name: {} config: {}", name, config);
+		//check the existence of the config file
+		if ( !config.startsWith("classpath") ) {
+			try {
+				File configFile = new File(config);
+				if (!configFile.exists()) {
+					log.warn("Config file was not found at: {}", configFile.getCanonicalPath());
+					configFile = new File("file://" + config);
 					if (!configFile.exists()) {
-						log.warn("Config file was not found at: {}", configFile.getCanonicalPath());
-						configFile = new File("file://" + config);
-						if (!configFile.exists()) {
-							log.warn("Config file was not found at either: {}", configFile.getCanonicalPath());
-						} else {
-							config = "file://" + config;
-						}
+						log.warn("Config file was not found at either: {}", configFile.getCanonicalPath());
+					} else {
+						config = "file://" + config;
 					}
-				} catch (IOException e) {
-					log.error("Error looking for config file", e);
 				}
+			} catch (IOException e) {
+				log.error("Error looking for config file", e);
 			}
-			// add the context to the parent, this will be red5.xml
-			ConfigurableBeanFactory factory = ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
-			if (factory.containsSingleton(name)) {
-				log.warn("Singleton {} already exists, try unload first", name);		
-				return;
-			}
-			// if parent context was not set then lookup red5.common
-			if (parentContext == null) {
-				log.debug("Lookup common - bean:{} local:{} singleton:{}", new Object[]{
-						factory.containsBean("red5.common"),
-						factory.containsLocalBean("red5.common"),
-						factory.containsSingleton("red5.common"),
-				});
-				parentContext = (ApplicationContext) factory.getBean("red5.common");
-			}
-			
-			if (config.startsWith("/"))
-				{
-					// Spring always interprets files as relative, so
-					// will strip a leading slash unless we tell
-					// it otherwise.
-					// It also appears to not need this for Windows
-					// absolute paths (e.g. C:\Foo\Bar) so we
-					// don't catch that either
-					String newConfig = "file://"+config;
-					log.debug("Resetting {} to {}", config, newConfig);
-					config = newConfig;
-				}
-			ApplicationContext context = new FileSystemXmlApplicationContext(
-						new String[] { config }, parentContext);
-			
-			log.debug("Adding to context map - name: {} context: {}", name, context);
-			contextMap.put(name, context);
-			// Register context in parent bean factory
-			log.debug("Registering - name: {}", name);
-			factory.registerSingleton(name, context);
+		}
 		
+		// add the context to the parent, this will be red5.xml
+		ConfigurableBeanFactory factory = ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
+		if (factory.containsSingleton(name)) {
+			log.warn("Singleton {} already exists, try unload first", name);		
+			return;
+		}
+		// if parent context was not set then lookup red5.common
+		if (parentContext == null) {
+			log.debug("Lookup common - bean:{} local:{} singleton:{}", new Object[]{
+					factory.containsBean("red5.common"),
+					factory.containsLocalBean("red5.common"),
+					factory.containsSingleton("red5.common"),
+			});
+			parentContext = (ApplicationContext) factory.getBean("red5.common");
+		}
+		if (config.startsWith("/"))
+		{
+			// Spring always interprets files as relative, so
+			// will strip a leading slash unless we tell
+			// it otherwise.
+			// It also appears to not need this for Windows
+			// absolute paths (e.g. C:\Foo\Bar) so we
+			// don't catch that either
+			String newConfig = "file://"+config;
+			log.debug("Resetting {} to {}", config, newConfig);
+			config = newConfig;
+		}
+		ApplicationContext context = new FileSystemXmlApplicationContext(
+				new String[] { config }, parentContext);
+		log.debug("Adding to context map - name: {} context: {}", name, context);
+		contextMap.put(name, context);
+		// Register context in parent bean factory
+		log.debug("Registering - name: {}", name);
+		factory.registerSingleton(name, context);
 	}
 
 	/**

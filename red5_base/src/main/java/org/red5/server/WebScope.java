@@ -19,7 +19,8 @@ package org.red5.server;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 
@@ -125,8 +126,7 @@ public class WebScope extends Scope implements ServletContextAware {
 	 * Can't set parent to Web scope. Web scope is top level.
 	 */
 	public void setParent() {
-		throw new RuntimeException(
-				"Cannot set parent, you must set global scope");
+		throw new RuntimeException("Cannot set parent, you must set global scope");
 	}
 
 	/**
@@ -217,11 +217,17 @@ public class WebScope extends Scope implements ServletContextAware {
 		keepOnDisconnect = false;
 		uninit();
 		// We need to disconnect all clients before unregistering
-		Iterator<IConnection> iter = getConnections();
-		while (iter.hasNext()) {
-			IConnection conn = iter.next();
-			conn.close();
+		Collection<Set<IConnection>> conns = getConnections();
+		for (Set<IConnection> set : conns) {
+			for (IConnection conn : set) {
+				conn.close();
+			}
+			//should we clear the set?
+			set.clear();
 		}
+		//
+		conns.clear();
+		//
 		if (hostnames != null && hostnames.length > 0) {
 			for (String element : hostnames) {
 				server.removeMapping(element, getName());

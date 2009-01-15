@@ -122,13 +122,18 @@ public class ProviderService implements IProviderService {
 		log.debug("getVODProviderFile - scope: {} name: {}", scope, name);
 		File file = null;
 		try {
-			log.info("getVODProviderFile scope path: {} name: {}", scope.getContextPath(), name);
+			log.debug("getVODProviderFile scope path: {} name: {}", scope.getContextPath(), name);
 			file = getStreamFile(scope, name);
 		} catch (IOException e) {
 			log.error("Problem getting file: {}", name, e);
 		}
 		if (file == null || !file.exists()) {
-			log.warn("File was null or did not exist: {}", name);
+			//if there is no file extension this is most likely a live stream
+			if (name.indexOf('.') > 0) {
+				log.info("File was null or did not exist: {}", name);
+			} else {
+				log.debug("VOD file {} was not found, may be live stream", name);
+			}
 			return null;
 		}
 		return file;

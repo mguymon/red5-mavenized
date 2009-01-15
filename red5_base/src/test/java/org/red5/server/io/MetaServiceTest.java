@@ -1,5 +1,24 @@
 package org.red5.server.io;
 
+/*
+ * RED5 Open Source Flash Server - http://www.osflash.org/red5
+ *
+ * Copyright (c) 2006-2008 by respective authors. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation; either version 2.1 of the License, or (at your option) any later
+ * version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along
+ * with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
 import java.io.File;
 import java.io.IOException;
 
@@ -43,9 +62,9 @@ public class MetaServiceTest extends TestCase {
 	 */
 	public void testWrite() throws IOException {
 		// Get MetaData to embed
-		MetaData meta = createMeta();
+		MetaData<?, ?> meta = createMeta();
 		// Read in a FLV file for reading tags
-		File tmp = new File("src/test/resources/test.flv");
+		File tmp = new File("src/test/resources/fixtures/test.flv");
 		System.out.println("Path: "+ tmp.getAbsolutePath());
 		IFLV flv = (IFLV) service.getStreamableFile(tmp);
 		flv.setCache(NoCacheImpl.getInstance());
@@ -53,22 +72,22 @@ public class MetaServiceTest extends TestCase {
 		flv.setMetaService(metaService);
 		// set the MetaData
 		flv.setMetaData(meta);
-
 	}
 
 	/**
-	 * Create some test Metadata for insertion
+	 * Create some test Metadata for insertion.
+	 *
 	 * @return MetaData meta
 	 */
-	private MetaData createMeta() {
+	private MetaData<?, ?> createMeta() {
 		IMetaCue metaCue[] = new MetaCue[2];
 
-	  	IMetaCue cp = new MetaCue();
+	  	IMetaCue cp = new MetaCue<Object, Object>();
 		cp.setName("cue_1");
 		cp.setTime(0.01);
 		cp.setType(ICueType.EVENT);
 
-		IMetaCue cp1 = new MetaCue();
+		IMetaCue cp1 = new MetaCue<Object, Object>();
 		cp1.setName("cue_2");
 		cp1.setTime(0.03);
 		cp1.setType(ICueType.EVENT);
@@ -77,7 +96,7 @@ public class MetaServiceTest extends TestCase {
 		metaCue[0] = cp;
 		metaCue[1] = cp1;
 
-		MetaData meta = new MetaData();
+		MetaData<?, ?> meta = new MetaData<Object, Object>();
 		meta.setMetaCue(metaCue);
 		meta.setCanSeekToEnd(true);
 		meta.setDuration(300);

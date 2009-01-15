@@ -3,7 +3,7 @@ package org.red5.server.service;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006 by respective authors. All rights reserved.
+ * Copyright (c) 2006-2008 by respective authors. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -17,9 +17,6 @@ package org.red5.server.service;
  * You should have received a copy of the GNU Lesser General Public License along
  * with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * @author The Red5 Project (red5@osflash.org)
- * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
 import junit.framework.Assert;
@@ -30,6 +27,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+/**
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+*/
 public class ServiceInvokerTest extends TestCase {
 
 	// TODO: Add more tests!
@@ -66,32 +67,30 @@ public class ServiceInvokerTest extends TestCase {
 	}
 
 	public void testExceptionStatus() {
-		Object[] params = new Object[] { "Woot this is cool" };
-		Call call = new Call("doesntExist", "echoString", params);
 		ServiceInvoker invoker = (ServiceInvoker) appCtx
-				.getBean(ServiceInvoker.SERVICE_NAME);
-		invoker.invoke(call, appCtx);
-		Assert.assertEquals(call.isSuccess(), false);
-		Assert.assertEquals(call.getStatus(), Call.STATUS_SERVICE_NOT_FOUND);
-		call = new Call("echoService", "doesntExist", params);
-		invoker.invoke(call, appCtx);
-		Assert.assertEquals(call.isSuccess(), false);
-		Assert.assertEquals(call.getStatus(), Call.STATUS_METHOD_NOT_FOUND);
+		.getBean(ServiceInvoker.SERVICE_NAME);
+		Object service = appCtx.getBean("echoService");
+		Object[] params = new Object[] { "Woot this is cool" };
+		Call call = new Call("echoService", "doesntExist", params);
+		invoker.invoke(call, service);
+		Assert.assertEquals(false, call.isSuccess());
+		Assert.assertEquals(Call.STATUS_METHOD_NOT_FOUND, call.getStatus());
 		params = new Object[] { "too", "many", "params" };
-		call = new Call("echoService", "echoString", params);
-		invoker.invoke(call, appCtx);
-		Assert.assertEquals(call.isSuccess(), false);
-		Assert.assertEquals(call.getStatus(), Call.STATUS_METHOD_NOT_FOUND);
+		call = new Call("echoService", "echoNumber", params);
+		invoker.invoke(call, service);
+		Assert.assertEquals(false, call.isSuccess());
+		Assert.assertEquals(Call.STATUS_METHOD_NOT_FOUND, call.getStatus());
 	}
 
 	public void testSimpleEchoCall() {
 		Object[] params = new Object[] { "Woot this is cool" };
+		Object service = appCtx.getBean("echoService");
 		PendingCall call = new PendingCall("echoService", "echoString", params);
 		ServiceInvoker invoker = (ServiceInvoker) appCtx
 				.getBean(ServiceInvoker.SERVICE_NAME);
-		invoker.invoke(call, appCtx);
-		Assert.assertEquals(call.isSuccess(), true);
-		Assert.assertEquals(call.getResult(), params[0]);
+		invoker.invoke(call, service);
+		Assert.assertEquals(true, call.isSuccess());
+		Assert.assertEquals(params[0], call.getResult());
 	}
 
 }

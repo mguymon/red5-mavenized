@@ -24,6 +24,8 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javax.management.ObjectName;
+
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.red5.server.api.IScope;
@@ -43,7 +45,12 @@ public class RTMPMinaConnection extends RTMPConnection implements
 	/**
 	 * MINA I/O session, connection between two endpoints
 	 */
-	protected IoSession ioSession;
+	private volatile IoSession ioSession;
+	
+	/**
+	 * MBean object name used for de/registration purposes.
+	 */
+	private volatile ObjectName oName;
 
 	{
 		log.info("RTMPMinaConnection created");
@@ -116,27 +123,27 @@ public class RTMPMinaConnection extends RTMPConnection implements
 	/** {@inheritDoc} */
 	@Override
 	public long getPendingMessages() {
-		if (ioSession == null)
+		if (ioSession == null) {
 			return 0;
-		
+		}
 		return ioSession.getScheduledWriteRequests();
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public long getReadBytes() {
-		if (ioSession == null)
+		if (ioSession == null) {
 			return 0;
-		
+		}
 		return ioSession.getReadBytes();
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public long getWrittenBytes() {
-		if (ioSession == null)
+		if (ioSession == null) {
 			return 0;
-		
+		}
 		return ioSession.getWrittenBytes();
 	}
 

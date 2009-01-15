@@ -1,6 +1,25 @@
 package org.red5.server.api;
 
-import static junit.framework.Assert.assertTrue;
+/*
+ * RED5 Open Source Flash Server - http://www.osflash.org/red5
+ *
+ * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation; either version 2.1 of the License, or (at your option) any later
+ * version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along
+ * with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+import static junit.framework.Assert.*;
 import junit.framework.JUnit4TestAdapter;
 
 import org.junit.Test;
@@ -22,8 +41,12 @@ public class ScopeTest extends BaseTest {
 	@Test
 	public void connectionHandler() {
 
-		TestConnection conn = new TestConnection(host, path_app, null);
-		IScope scope = context.resolveScope(path_app);
+		MockConnection conn = new MockConnection(host, "/", null);
+		IScope scope = context.resolveScope("/");
+		IClientRegistry reg = context.getClientRegistry();
+		IClient client = reg.newClient(null);
+		assertNotNull(client);
+		conn.initialize(client);
 		if (!conn.connect(scope)) {
 			assertTrue("didnt connect", false);
 		} else {
@@ -52,7 +75,7 @@ public class ScopeTest extends BaseTest {
 		IClientRegistry reg = context.getClientRegistry();
 		IClient client = reg.newClient(null);
 
-		TestConnection conn = new TestConnection(host, path_app, client.getId());
+		MockConnection conn = new MockConnection(host, path_app, client.getId());
 		conn.initialize(client);
 
 		assertTrue("client should not be null", client != null);
@@ -76,7 +99,6 @@ public class ScopeTest extends BaseTest {
 				.getClients().size() == 0);
 
 		//client.disconnect();
-
 	}
 
 	@Test
@@ -84,7 +106,7 @@ public class ScopeTest extends BaseTest {
 
 		// Global
 		IScope global = context.getGlobalScope();
-		assertTrue("global scope not null", global != null);
+		assertNotNull("global scope should be set", global);
 		assertTrue("should be global", ScopeUtils.isGlobal(global));
 		log.debug("{}", global);
 
@@ -106,5 +128,4 @@ public class ScopeTest extends BaseTest {
 		}
 
 	}
-
 }

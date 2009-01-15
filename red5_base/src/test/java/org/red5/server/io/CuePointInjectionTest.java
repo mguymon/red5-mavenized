@@ -3,7 +3,7 @@ package org.red5.server.io;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006 by respective authors. All rights reserved.
+ * Copyright (c) 2006-2008 by respective authors. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -17,11 +17,7 @@ package org.red5.server.io;
  * You should have received a copy of the GNU Lesser General Public License along
  * with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * @author The Red5 Project (red5@osflash.org)
- * @author Dominick Accattato (daccattato@gmail.com)
- * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
- */
+*/
 
 import java.io.File;
 import java.io.IOException;
@@ -45,13 +41,12 @@ import org.red5.io.flv.meta.IMetaCue;
 import org.red5.io.flv.meta.MetaCue;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
-import org.red5.server.api.cache.ICacheStore;
 import org.red5.server.cache.NoCacheImpl;
 
 /**
  * @author The Red5 Project (red5@osflash.org)
- * @author daccattato(daccattato@gmail.com)
- * @version 0.3
+ * @author Dominick Accattato (daccattato@gmail.com)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 public class CuePointInjectionTest extends TestCase {
 
@@ -75,7 +70,7 @@ public class CuePointInjectionTest extends TestCase {
 	 * @throws IOException
 	 */
 	public void testCuePointInjection() throws IOException {
-		File f = new File("src/test/resources/test_cue1.flv");
+		File f = new File("src/test/resources/fixtures/test_cue1.flv");
 		System.out.println("Path: " + f.getAbsolutePath());
 		if (f.exists()) {
 			f.delete();
@@ -90,7 +85,7 @@ public class CuePointInjectionTest extends TestCase {
 		ITagWriter writer = flv.getWriter();
 
 		// Create a reader for testing
-		File readfile = new File("test/test_cue.flv");
+		File readfile = new File("src/test/resources/fixtures/test_cue.flv");
 		assertTrue(readfile.exists());
 		
 		IFLV readflv = (IFLV) service.getStreamableFile(readfile);
@@ -114,18 +109,18 @@ public class CuePointInjectionTest extends TestCase {
 	private void writeTagsWithInjection(ITagReader reader, ITagWriter writer)
 			throws IOException {
 
-		IMetaCue cp = new MetaCue();
+		IMetaCue cp = new MetaCue<Object, Object>();
 		cp.setName("cue_1");
 		cp.setTime(0.01);
 		cp.setType(ICueType.EVENT);
 
-		IMetaCue cp1 = new MetaCue();
+		IMetaCue cp1 = new MetaCue<Object, Object>();
 		cp1.setName("cue_1");
 		cp1.setTime(2.01);
 		cp1.setType(ICueType.EVENT);
 
 		// Place in TreeSet for sorting
-		TreeSet ts = new TreeSet();
+		TreeSet<IMetaCue> ts = new TreeSet<IMetaCue>();
 		ts.add(cp);
 		ts.add(cp1);
 
@@ -174,7 +169,7 @@ public class CuePointInjectionTest extends TestCase {
 	 */
 	private ITag injectCuePoint(Object cue, ITag tag) {
 
-		IMetaCue cp = (MetaCue) cue;
+		IMetaCue cp = (MetaCue<?, ?>) cue;
 		Output out = new Output(ByteBuffer.allocate(1000));
 		Serializer ser = new Serializer();
 		ser.serialize(out, "onCuePoint");
@@ -198,7 +193,7 @@ public class CuePointInjectionTest extends TestCase {
 	 * @return int time
 	 */
 	private int getTimeInMilliseconds(Object object) {
-		IMetaCue cp = (MetaCue) object;
+		IMetaCue cp = (MetaCue<?, ?>) object;
 		return (int) (cp.getTime() * 1000.00);
 
 	}
@@ -209,22 +204,22 @@ public class CuePointInjectionTest extends TestCase {
 	 * @return void
 	 */
 	public void testCuePointOrder() {
-		IMetaCue cue = new MetaCue();
+		IMetaCue cue = new MetaCue<Object, Object>();
 		cue.setName("cue_1");
 		cue.setTime(0.01);
 		cue.setType(ICueType.EVENT);
 
-		IMetaCue cue1 = new MetaCue();
+		IMetaCue cue1 = new MetaCue<Object, Object>();
 		cue1.setName("cue_1");
 		cue1.setTime(2.01);
 		cue1.setType(ICueType.EVENT);
 
-		IMetaCue cue2 = new MetaCue();
+		IMetaCue cue2 = new MetaCue<Object, Object>();
 		cue2.setName("cue_1");
 		cue2.setTime(1.01);
 		cue2.setType(ICueType.EVENT);
 
-		TreeSet ts = new TreeSet();
+		TreeSet<IMetaCue> ts = new TreeSet<IMetaCue>();
 		ts.add(cue);
 		ts.add(cue1);
 		ts.add(cue2);

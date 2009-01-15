@@ -21,7 +21,6 @@ package org.red5.io.flv.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
@@ -342,8 +341,6 @@ public class FLVReader implements IoConstants, ITagReader,
      * Post-initialization hook, reads keyframe metadata and decodes header (if any).
      */
     private void postInitialize() {
-		ITag tag = null;
-
 		if (log.isDebugEnabled()) {
 			log.debug("FLVReader 1 - Buffer size: " + getTotalBytes()
 					+ " position: " + getCurrentPosition() + " remaining: "
@@ -354,9 +351,7 @@ public class FLVReader implements IoConstants, ITagReader,
 		}
 		keyframeMeta = analyzeKeyFrames();
 		long old = getCurrentPosition();
-		
-		
-
+		log.debug("Old position: {}", old);
 	}
 	
     /** {@inheritDoc} */
@@ -574,6 +569,8 @@ public class FLVReader implements IoConstants, ITagReader,
     public synchronized ITag readTag() {
 		long oldPos = getCurrentPosition();
 		ITag tag = readTagHeader();
+		
+		log.debug("readTag, oldPos: {}, tag header: {}", oldPos, tag);
 
 		if (!metadataSent && tag.getDataType() != TYPE_METADATA
 				&& generateMetadata) {
@@ -666,7 +663,6 @@ public class FLVReader implements IoConstants, ITagReader,
 		// point to the first tag
 		setCurrentPosition(9);
 
-		int idx = 0;
 		boolean audioOnly = true;
 		while (this.hasMoreTags()) {
 			long pos = getCurrentPosition();
@@ -706,7 +702,7 @@ public class FLVReader implements IoConstants, ITagReader,
 			// log.debug("---->" + in.remaining() + " limit=" + in.limit() + "
 			// new pos=" + newPosition);
 			if (newPosition >= getTotalBytes()) {
-				log.info("New position exceeds limit");
+				log.error("New position exceeds limit");
 				if (log.isDebugEnabled()) {
 					log.debug("-----");
 					log.debug("Keyframe analysis");
@@ -717,7 +713,7 @@ public class FLVReader implements IoConstants, ITagReader,
 					log.debug(" pos=" + pos);
 					log.debug("-----");
 				}
-				break;
+				throw new RuntimeException("New position exceeds limit");
 			} else {
 				setCurrentPosition(newPosition);
 			}
@@ -779,8 +775,9 @@ public class FLVReader implements IoConstants, ITagReader,
 		// However, we will have to check into this during optimization.
 		int bodySize = IOUtils.readUnsignedMediumInt(in);
 		int timestamp = IOUtils.readUnsignedMediumInt(in);
-		// reserved
-		in.getInt();
+		
+		timestamp += (in.get() & 0xFF) * 256 * 256 * 256;
+		IOUtils.readUnsignedMediumInt(in);         
 
 		return new Tag(dataType, timestamp, bodySize, null, previousTagSize);
 	}

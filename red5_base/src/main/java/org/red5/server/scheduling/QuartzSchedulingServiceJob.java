@@ -47,7 +47,7 @@ public class QuartzSchedulingServiceJob implements Job {
     /**
      * Logger
      */
-    private Logger log = LoggerFactory.getLogger( QuartzSchedulingServiceJob.class );
+    private Logger log = LoggerFactory.getLogger(QuartzSchedulingServiceJob.class);
 
     /** {@inheritDoc} */
     public void execute(JobExecutionContext arg0) throws JobExecutionException {

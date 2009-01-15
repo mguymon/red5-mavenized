@@ -1,6 +1,6 @@
 h2. Red5 Base - Mavenized
 
-A "mavenized":http://maven.apache.org component of the "Red5 Flash Server":http://osflash.org/red5 version 0.8rc1. 
+A "mavenized":http://maven.apache.org component of the "Red5 Flash Server":http://osflash.org/red5 from trunk rev 3371. 
 This module contains all the base classes and resources required to run an instance of Red5.
 
 h3. Using the red5-base dependency

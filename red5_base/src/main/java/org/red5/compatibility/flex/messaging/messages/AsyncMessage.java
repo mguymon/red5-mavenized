@@ -27,13 +27,16 @@ package org.red5.compatibility.flex.messaging.messages;
  */
 public class AsyncMessage extends AbstractMessage {
 
+	private static final long serialVersionUID = 977072715599150153L;
+
 	/** Id of message this message belongs to. */
 	public String correlationId;
 
 	/** {@inheritDoc} */
 	protected void addParameters(StringBuilder result) {
 		super.addParameters(result);
-		result.append(",correlationId="+correlationId);
+		result.append(",correlationId=");
+		result.append(correlationId);
 	}
 
 }

@@ -187,6 +187,11 @@ public class StreamService implements IStreamService {
 		pause(Boolean.valueOf(pausePlayback), position);
 	}
 
+	/** {@inheritDoc} */
+	public void pauseRaw(boolean pausePlayback, int position) {
+		pause(pausePlayback, position);
+	}
+	
     /**
      * Pause at given position. Required as "pausePlayback" can be "null" if no flag is passed by the
 	 * client
@@ -431,13 +436,14 @@ public class StreamService implements IStreamService {
 					((BaseConnection) conn).registerBasicScope(bsScope);
 				}
 			}
+			logger.debug("Mode: {}", mode);
 			if (IClientStream.MODE_RECORD.equals(mode)) {
 				bs.start();
 				bs.saveAs(name, false);
 			} else if (IClientStream.MODE_APPEND.equals(mode)) {
 				bs.start();
 				bs.saveAs(name, true);
-			} else if (IClientStream.MODE_LIVE.equals(mode)) {
+			} else if (IClientStream.MODE_PUBLISH.equals(mode) || IClientStream.MODE_LIVE.equals(mode)) {
 				bs.start();
 			}
 			bs.startPublishing();
@@ -571,7 +577,8 @@ public class StreamService implements IStreamService {
 	 * @param name
 	 * @param streamId
 	 */    
-    private void sendNSStatus(IConnection conn, String statusCode, String description, String name, int streamId) {
+    @SuppressWarnings("unused")
+	private void sendNSStatus(IConnection conn, String statusCode, String description, String name, int streamId) {
     	StreamService.sendNetStreamStatus(conn, statusCode, description, name, Status.STATUS, streamId);
 	}
     

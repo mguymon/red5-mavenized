@@ -1,6 +1,5 @@
 package org.red5.server.api.stream;
 
-import org.red5.server.api.IConnection;
 import org.red5.server.api.IScopeService;
 
 /*
@@ -130,6 +129,13 @@ public interface IStreamService extends IScopeService {
      */
 	public void pause(boolean pausePlayback, int position);
 
+	/**
+	 * Undocumented Flash Plugin 10 call, assuming to be the alias to pause(boolean, int)
+	 * @param pausePlayback           Pause flah
+	 * @param position                Pause position
+	 */
+	public void pauseRaw(boolean pausePlayback, int position);
+	
     /**
      * Can recieve video?
      * @param receive       Boolean flag

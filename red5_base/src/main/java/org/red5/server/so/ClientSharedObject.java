@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Works with client-side shared object
  */
+@SuppressWarnings("unchecked")
 public class ClientSharedObject extends SharedObject implements
 		IClientSharedObject, IEventDispatcher {
 
@@ -186,7 +187,7 @@ public class ClientSharedObject extends SharedObject implements
 						break;
 
 					default:
-						log.warn("Unknown SO event: " + event.getType());
+						log.warn("Unknown SO event: {}", event.getType());
 				}
 			}
 		} finally {
@@ -317,7 +318,7 @@ public class ClientSharedObject extends SharedObject implements
 
 	/** {@inheritDoc} */
 	@Override
-	public void sendMessage(String handler, List arguments) {
+	public void sendMessage(String handler, List<?> arguments) {
 		ownerMessage.addEvent(Type.SERVER_SEND_MESSAGE, handler, arguments);
 		notifyModified();
 	}
