@@ -5,18 +5,23 @@
                           http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd">
 
 	<!-- Red5 Context -->
-	<bean id="webapp.context" class="org.red5.server.Context" autowire="byType" />
+	<bean id="web.context" class="org.red5.server.Context">
+		<property name="scopeResolver" ref="red5.scopeResolver" />
+		<property name="clientRegistry" ref="global.clientRegistry" />
+		<property name="serviceInvoker" ref="global.serviceInvoker" />
+		<property name="mappingStrategy" ref="global.mappingStrategy" />
+	</bean>
 	
 	<!-- Red5 Web Scope -->
-	<bean id="webapp.scope" class="org.red5.server.WebScope" init-method="register">
+	<bean id="web.scope" class="org.red5.server.WebScope" init-method="register">
 		<property name="server" ref="red5.server" />
 		<property name="parent" ref="global.scope" />
-		<property name="context" ref="webapp.context" />
-		<property name="handler" ref="webapp.handler" />
+		<property name="context" ref="web.context" />
+		<property name="handler" ref="web.handler" />
 		<property name="contextPath" value="/sample" />
 		<property name="virtualHosts" value="*,localhost, localhost:5080, 127.0.0.1:5080" />
 	</bean>
 	
 	<!-- Red5 Application -->
-	<bean id="webapp.handler" class="${groupId}.SampleApp" />
+	<bean id="web.handler" class="${groupId}.SampleApp" />
 </beans>
