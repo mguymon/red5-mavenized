@@ -11,7 +11,7 @@ To enable Red5 support in a maven project, just add the follow dependency to the
 	   <dependency>
 			<groupId>org.red5</groupId>
 			<artifactId>red5-base</artifactId>
-			<version>0.8rc1-SNAPSHOT</version>
+			<version>trunk-3371-SNAPSHOT</version>
 		</dependency>
 	</code>
 </pre>

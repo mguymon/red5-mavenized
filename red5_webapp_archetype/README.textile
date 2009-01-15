@@ -13,7 +13,7 @@ _groupId_ and _artifactId_. The _archetypeRepository_ is important, since the ar
 		mvn archetype:create                                    \
 		  -DarchetypeGroupId=com.slackworks                     \
 		  -DarchetypeArtifactId=red5-webapp                     \ 
-		  -DarchetypeVersion=0.1-SNAPSHOT                       \
+		  -DarchetypeVersion=trunk-3371-SNAPSHOT                \
 		  -DgroupId=*<my.groupid>*                              \
 		  -DartifactId=*<my-artifactId>*                        \
 		  -DarchetypeRepository=http://sprocket.slackworks.com/m2-snapshot

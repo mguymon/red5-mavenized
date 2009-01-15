@@ -4,7 +4,7 @@
 	<groupId>org.red5</groupId>
   	<artifactId>red5-base</artifactId>
 	<packaging>jar</packaging>
-	<version>0.8rc1-SNAPSHOT</version>
+	<version>trunk-3371-SNAPSHOT</version>
 	<name>red5-base</name>
 	<url>http://github.com/mguymon/red5-mavenized/tree/master</url>
 	<repositories>

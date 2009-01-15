@@ -4,14 +4,14 @@
 	<groupId>org.red5</groupId>
 	<artifactId>red5-tomcat</artifactId>
 	<packaging>jar</packaging>
-	<version>0.8rc1</version>
+	<version>trunk-3371-SNAPSHOT</version>
 	<name>red5-tomcat</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
 			<groupId>org.red5</groupId>
 			<artifactId>red5-base</artifactId>
-			<version>0.8rc1-SNAPSHOT</version>
+			<version>trunk-3371-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
