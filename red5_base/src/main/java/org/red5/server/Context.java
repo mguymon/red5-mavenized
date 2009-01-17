@@ -228,7 +228,7 @@ public class Context implements IContext, ApplicationContextAware, ContextMBean 
 		if ( deploymentType == null ) {
 			ExtendedPropertyPlaceholderConfigurer configurer = 
 				(ExtendedPropertyPlaceholderConfigurer)applicationContext.getBean( "placeholderConfig" );
-			deploymentType = configurer.getProperties().getProperty( "red5.deployment.type" );
+			deploymentType = configurer.getMergedProperties().getProperty( "red5.deployment.type" );
 		}
 		
 		logger.debug("Deployment type: " + deploymentType);
