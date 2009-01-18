@@ -135,14 +135,14 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 		for (Object key : props.keySet()) {
 			String name = (String) key;
 			String config = props.getProperty(name);
-			/** 
-			 *  DISABLED
-			 * TODO: we should support arbitrary property substitution
-			config = config.replace("${red5.root}", System
-					.getProperty("red5.root"));
-			config = config.replace("${red5.config_root}", System
-					.getProperty("red5.config_root"));
-			*/
+			// TODO: we should support arbitrary property substitution
+			if ( System.getProperty("red5.root") != null) {
+				config = config.replace("${red5.root}", System.getProperty("red5.root"));
+			}
+			
+			if ( System.getProperty("red5.config_root") != null ) {
+				config = config.replace("${red5.config_root}", System.getProperty("red5.config_root"));
+			}
 			log.info("Loading: {} = {}", name, config);
 
 			// Load context
@@ -167,8 +167,9 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 	 */
 	public void loadContext(String name, String config) {
 		log.debug("Load context - name: {} config: {}", name, config);
-		//check the existence of the config file
-		if ( !config.startsWith("classpath") ) {
+		
+		//If not loaded by the classpath, check the existence of the config file	
+		if ( !config.matches("^classpath\\*?:") ) {
 			try {
 				File configFile = new File(config);
 				if (!configFile.exists()) {
