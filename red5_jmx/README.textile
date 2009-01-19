@@ -7,16 +7,15 @@ h3. Using the red5-jmx dependency
 
 Just include the red5-jmx dependency and create the properties file red5-jmx.properties in the root of the classpath
 with properties:
-
-	* red5.config_root: directory of JMX properties files.
-	* rtmps.keystorepass: defaults to password
-	* jmx.rmi.port.registry: defaults to 9999
-	* jmx.rmi.port.remoteobjects: defaults to null
-	* jmx.rmi.host: defaults to 0.0.0.0
-	* jmx.rmi.ssl: defaults to false
-	* jmx.http: default to false
-	* jmx.http.port: default to 8082
+  * red5.config_root: directory of JMX properties files.
+  * rtmps.keystorepass: defaults to password
+  * jmx.rmi.port.registry: defaults to 9999
+  * jmx.rmi.port.remoteobjects: defaults to null
+  * jmx.rmi.host: defaults to 0.0.0.0
+  * jmx.rmi.ssl: defaults to false
+  * jmx.http: default to false
+  * jmx.http.port: default to 8082
  
  With the follow properties files in red5.config_root:
- 	* password.properties
-	* keystore.jmx
+   * password.properties
+   * keystore.jmx
