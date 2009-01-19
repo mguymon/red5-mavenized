@@ -10,6 +10,8 @@
 			</list>
 		</property>
 	</bean>
+	
+	<import resource="classpath*:red5-common-*.xml"/>
 
 	<!-- This context is shared between all child contexts. -->
 	<!-- Server bean -->
