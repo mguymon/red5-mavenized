@@ -119,7 +119,7 @@ public class Standalone {
         
         log.info( System.getProperty( "red5.root" ) );
         if ( System.getProperty( "red5.root" ) == null ) {
-        	ExtendedPropertyPlaceholderConfigurer.addPlaceholderProperty( "red5.root", System.getProperty("user.dir") );
+        	ExtendedPropertyPlaceholderConfigurer.addGlobalProperty( "red5.root", System.getProperty("user.dir") );
         	System.setProperty( "red5.root", System.getProperty("user.dir") );
         }
         
