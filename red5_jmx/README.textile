@@ -17,7 +17,7 @@ with properties:
   * jmx.http: default to false
   * jmx.http.port: default to 8082
  
-With the follow properties files in red5.config_root:
+With the follow properties files in _red5.config_root_:
 
    * password.properties
    * keystore.jmx
