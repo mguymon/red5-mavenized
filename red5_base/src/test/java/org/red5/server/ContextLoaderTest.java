@@ -27,8 +27,8 @@ public class ContextLoaderTest {
 	public void testInitContextInPropertiesByClassPath() throws Exception {
 		loader.init();
 		ApplicationContext context = loader.getContext( "test_context" );
-		assertNotNull( context.getBean( "serializer" ) );
-		assertNotNull( context.getBean( "deserializer" ) );
+		assertNotNull( context.getBean( "testSerializer" ) );
+		assertNotNull( context.getBean( "testDeserializer" ) );
 	}
 
 	@Test
@@ -40,8 +40,8 @@ public class ContextLoaderTest {
 		
 		ApplicationContext context = loader.getContext( "test_context" );
 		
-		assertNotNull( context.getBean( "serializer" ) );
-		assertNotNull( context.getBean( "deserializer" ) );
+		assertNotNull( context.getBean( "testSerializer" ) );
+		assertNotNull( context.getBean( "testDeserializer" ) );
 	}
 	
 }

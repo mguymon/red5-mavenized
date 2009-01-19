@@ -169,7 +169,7 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 		log.debug("Load context - name: {} config: {}", name, config);
 		
 		//If not loaded by the classpath, check the existence of the config file	
-		if ( !config.matches("^classpath\\*?:") ) {
+		if ( !config.matches("^classpath\\*?:.*") ) {
 			try {
 				File configFile = new File(config);
 				if (!configFile.exists()) {
