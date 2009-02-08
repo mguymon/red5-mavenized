@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.slackworks</groupId>
 	<artifactId>red5-webapp</artifactId>
-	<version>trunk-3371-SNAPSHOT</version>
+	<version>0.8rc2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<distributionManagement>

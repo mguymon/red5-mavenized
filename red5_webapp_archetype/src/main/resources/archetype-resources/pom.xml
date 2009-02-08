@@ -26,7 +26,7 @@
 		<dependency>
 			<groupId>org.red5</groupId>
 			<artifactId>red5-base</artifactId>
-			<version>trunk-3371-SNAPSHOT</version>
+			<version>0.8rc2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

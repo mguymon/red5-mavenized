@@ -3,7 +3,7 @@ package org.red5.server.net.rtmps;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -20,7 +20,6 @@ package org.red5.server.net.rtmps;
  */
  
 import java.io.File;
-import java.io.IOException;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
@@ -30,7 +29,6 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.loader.WebappLoader;
 import org.red5.logging.Red5LoggerFactory;
-import org.red5.server.ServletClassLoader;
 import org.red5.server.api.IServer;
 import org.red5.server.net.rtmpt.TomcatRTMPTLoader;
 import org.red5.server.util.FileUtil;
@@ -55,8 +53,7 @@ public class TomcatRTMPSLoader extends TomcatRTMPTLoader {
 	/**
 	 * Setter for server
 	 * 
-	 * @param server
-	 *            Value to set for property 'server'.
+	 * @param server Value to set for property 'server'.
 	 */
 	public void setServer(IServer server) {
 		log.debug("RTMPS setServer");
@@ -82,28 +79,24 @@ public class TomcatRTMPSLoader extends TomcatRTMPTLoader {
 		File appDirBase = new File(webappFolder);
 		String webappContextDir = FileUtil.formatPath(appDirBase.getAbsolutePath(), "/root");
 		Context ctx = embedded.createContext("/", webappContextDir);
+		//no reload for now
 		ctx.setReloadable(false);
 		log.debug("Context name: {}", ctx.getName());
 		Object ldr = ctx.getLoader();
-		log.debug("Context loader: {}", ldr);
+		log.trace("Context loader (null if the context has not been started): {}", ldr);
 		if (ldr == null) {
-			log.debug("Context loader was null");
-			ClassLoader classloader;
-			try {
-				classloader = ServletClassLoader.getServletClassLoader(new File(webappContextDir), ServletClassLoader.USE_WAR_LIB);
-			} catch (IOException e) {
-				log.warn("Servlet class loader setup error", e);
-				classloader = Thread.currentThread().getContextClassLoader();
-			}
-			log.debug("Context class loader: {}", classloader);
-			WebappLoader wldr = new WebappLoader(classloader);
+			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+			//log.debug("Classloaders - Parent {}\nTCL {}\n\n", new Object[] {classLoader.getParent(), classLoader});
+			ctx.setParentClassLoader(classLoader);
+
+			WebappLoader wldr = new WebappLoader(classLoader);
+			//add the Loader to the context
 			ctx.setLoader(wldr);
 		}  		
 		appDirBase = null;
 		webappContextDir = null;
 		
 		host.addChild(ctx);
-		
 		// add servlet wrapper
 		StandardWrapper wrapper = new StandardWrapper();
 		wrapper.setServletName("RTMPTServlet");
@@ -148,7 +141,6 @@ public class TomcatRTMPSLoader extends TomcatRTMPTLoader {
     		embedded.addConnector(connector);
 
 			log.info("Starting RTMPS engine");
-			//embedded.start();
 			connector.start();
 		} catch (Exception e) {
 			log.error("Error loading tomcat", e);
