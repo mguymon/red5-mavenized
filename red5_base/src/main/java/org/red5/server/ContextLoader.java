@@ -3,7 +3,7 @@ package org.red5.server;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -75,10 +75,8 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 	protected ConcurrentMap<String, ApplicationContext> contextMap = new ConcurrentHashMap<String, ApplicationContext>();
 
 	/**
-	 * @param applicationContext
-	 *            Spring application context
-	 * @throws BeansException
-	 *             Top level exception for app context (that is, in fact, beans
+	 * @param applicationContext Spring application context
+	 * @throws BeansException Top level exception for app context (that is, in fact, beans
 	 *             factory)
 	 */
 	public void setApplicationContext(ApplicationContext applicationContext)
@@ -89,8 +87,7 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 	/**
 	 * Setter for parent application context
 	 * 
-	 * @param parentContext
-	 *            Parent Spring application context
+	 * @param parentContext Parent Spring application context
 	 */
 	public void setParentContext(ApplicationContext parentContext) {
 		this.parentContext = parentContext;
@@ -99,8 +96,7 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 	/**
 	 * Setter for context config name
 	 * 
-	 * @param contextsConfig
-	 *            Context config name
+	 * @param contextsConfig Context config name
 	 */
 	public void setContextsConfig(String contextsConfig) {
 		this.contextsConfig = contextsConfig;
@@ -109,8 +105,7 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 	/**
 	 * Loads context settings from ResourceBundle (.properties file)
 	 * 
-	 * @throws Exception
-	 *             I/O exception, casting exception and others
+	 * @throws Exception I/O exception, casting exception and others
 	 */
 	public void init() throws Exception {
 		log.debug("ContextLoader init");
@@ -136,13 +131,10 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 			String name = (String) key;
 			String config = props.getProperty(name);
 			// TODO: we should support arbitrary property substitution
-			if ( System.getProperty("red5.root") != null) {
-				config = config.replace("${red5.root}", System.getProperty("red5.root"));
-			}
-			
-			if ( System.getProperty("red5.config_root") != null ) {
-				config = config.replace("${red5.config_root}", System.getProperty("red5.config_root"));
-			}
+			config = config.replace("${red5.root}", System
+					.getProperty("red5.root"));
+			config = config.replace("${red5.config_root}", System
+					.getProperty("red5.config_root"));
 			log.info("Loading: {} = {}", name, config);
 
 			// Load context
@@ -160,32 +152,26 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 	 * Loads a context (Red5 application) and stores it in a context map, then adds
 	 * it's beans to parent (that is, Red5)
 	 * 
-	 * @param name
-	 *            Context name
-	 * @param config
-	 *            Filename
+	 * @param name Context name
+	 * @param config Filename
 	 */
 	public void loadContext(String name, String config) {
 		log.debug("Load context - name: {} config: {}", name, config);
-		
-		//If not loaded by the classpath, check the existence of the config file	
-		if ( !config.matches("^classpath\\*?:.*") ) {
-			try {
-				File configFile = new File(config);
+		//check the existence of the config file
+		try {
+			File configFile = new File(config);
+			if (!configFile.exists()) {
+				log.warn("Config file was not found at: {}", configFile.getCanonicalPath());
+				configFile = new File("file://" + config);
 				if (!configFile.exists()) {
-					log.warn("Config file was not found at: {}", configFile.getCanonicalPath());
-					configFile = new File("file://" + config);
-					if (!configFile.exists()) {
-						log.warn("Config file was not found at either: {}", configFile.getCanonicalPath());
-					} else {
-						config = "file://" + config;
-					}
+					log.warn("Config file was not found at either: {}", configFile.getCanonicalPath());
+				} else {
+					config = "file://" + config;
 				}
-			} catch (IOException e) {
-				log.error("Error looking for config file", e);
 			}
+		} catch (IOException e) {
+			log.error("Error looking for config file", e);
 		}
-		
 		// add the context to the parent, this will be red5.xml
 		ConfigurableBeanFactory factory = ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
 		if (factory.containsSingleton(name)) {
@@ -226,8 +212,7 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 	 * Unloads a context (Red5 application) and removes it from the context map, then removes
 	 * it's beans from the parent (that is, Red5)
 	 * 
-	 * @param name
-	 *            Context name
+	 * @param name Context name
 	 */	
 	public void unloadContext(String name) {
 		log.debug("Un-load context - name: {}", name);
@@ -259,8 +244,7 @@ public class ContextLoader implements ApplicationContextAware, ContextLoaderMBea
 	/**
 	 * Return context by name
 	 * 
-	 * @param name
-	 *            Context name
+	 * @param name Context name
 	 * @return Application context for given name
 	 */
 	public ApplicationContext getContext(String name) {

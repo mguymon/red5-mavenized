@@ -3,7 +3,7 @@ package org.red5.io.flv.meta;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -41,6 +41,8 @@ import java.util.Iterator;
  * @author The Red5 Project (red5@osflash.org)
  * @author Dominick Accattato (daccattato@gmail.com)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @param <K> key type
+ * @param <V> value type
  */
 public class MetaCue<K, V> extends HashMap<String, Object> implements IMetaCue {
 

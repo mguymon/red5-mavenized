@@ -3,7 +3,7 @@ package org.red5.io.flv.meta;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -37,6 +37,8 @@ import java.util.Map;
  *          //	private int height;
  *          //	private int width = 320;
  *          //	private double duration = 7.347;
+ * @param <K> key type
+ * @param <V> value type
  */
 public class MetaData<K, V> extends HashMap<String, Object> implements
 		IMetaData<Object, Object> {
@@ -149,8 +151,7 @@ public class MetaData<K, V> extends HashMap<String, Object> implements
 	/**
 	 * Sets the Meta Cue Points
 	 *
-	 * @param cuePoints
-	 *            The cuePoints to set.
+	 * @param cuePoints The cuePoints to set.
 	 */
 	public void setMetaCue(IMetaCue[] cuePoints) {
 		Map<String,Object> cues = new HashMap<String,Object>();

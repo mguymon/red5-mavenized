@@ -3,7 +3,7 @@ package org.red5.server.net.mrtmp;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -32,8 +32,8 @@ public interface IMRTMPOriginManager extends IMRTMPManager {
 	 * connections. For persistent connection, the mapping is static while
 	 * for polling connection, the mapping is dynamic and might not be
 	 * honored.
-	 * @param clientId
-	 * @param conn
+	 * @param rtmpConn rtmp connection
+	 * @param mrtmpConn mrtmp connection
 	 */
 	void associate(RTMPConnection rtmpConn, IMRTMPConnection mrtmpConn);
 	

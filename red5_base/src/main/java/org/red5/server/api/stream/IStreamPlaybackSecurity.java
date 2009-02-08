@@ -3,7 +3,7 @@ package org.red5.server.api.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -32,16 +32,11 @@ public interface IStreamPlaybackSecurity {
 	/**
 	 * Check if playback of a stream with the given name is allowed.
 	 * 
-	 * @param scope
-	 * 			Scope the stream is about to be played back from.
-	 * @param name
-	 * 			Name of the stream to play.
-	 * @param start
-	 * 			Position to start playback from (in milliseconds).
-	 * @param length
-	 * 			Duration to play (in milliseconds).
-	 * @param flushPlaylist
-	 * 			Flush playlist?
+	 * @param scope Scope the stream is about to be played back from.
+	 * @param name Name of the stream to play.
+	 * @param start Position to start playback from (in milliseconds).
+	 * @param length Duration to play (in milliseconds).
+	 * @param flushPlaylist Flush playlist?
 	 * @return <code>True</code> if playback is allowed, otherwise <code>False</code>
 	 */
 	public boolean isPlaybackAllowed(IScope scope, String name, int start, int length, boolean flushPlaylist);

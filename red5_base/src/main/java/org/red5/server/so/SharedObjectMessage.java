@@ -3,7 +3,7 @@ package org.red5.server.so;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -63,12 +63,9 @@ public class SharedObjectMessage extends BaseEvent implements
 	/**
 	 * Creates Shared Object event with given name, version and persistence flag
 	 * 
-	 * @param name
-	 *            Event name
-	 * @param version
-	 *            SO version
-	 * @param persistent
-	 *            SO persistence flag
+	 * @param name Event name
+	 * @param version SO version
+	 * @param persistent SO persistence flag
 	 */
 	public SharedObjectMessage(String name, int version, boolean persistent) {
 		this(null, name, version, persistent);
@@ -78,14 +75,10 @@ public class SharedObjectMessage extends BaseEvent implements
 	 * Creates Shared Object event with given listener, name, SO version and
 	 * persistence flag
 	 * 
-	 * @param source
-	 *            Event listener
-	 * @param name
-	 *            Event name
-	 * @param version
-	 *            SO version
-	 * @param persistent
-	 *            SO persistence flag
+	 * @param source Event listener
+	 * @param name Event name
+	 * @param version SO version
+	 * @param persistent SO persistence flag
 	 */
 	public SharedObjectMessage(IEventListener source, String name, int version,
 			boolean persistent) {

@@ -3,7 +3,7 @@ package org.red5.server.exception;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -31,7 +31,7 @@ public class ClientNotFoundException extends RuntimeException {
 
     /**
      * Create exception from given string message
-     * @param id
+     * @param id id
      */
     public ClientNotFoundException(String id) {
 		super("Client \"" + id + "\" not found.");

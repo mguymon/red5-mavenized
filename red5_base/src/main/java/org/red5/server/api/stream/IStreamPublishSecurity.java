@@ -3,7 +3,7 @@ package org.red5.server.api.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -32,12 +32,9 @@ public interface IStreamPublishSecurity {
 	/**
 	 * Check if publishing a stream with the given name is allowed.
 	 * 
-	 * @param scope
-	 * 			Scope the stream is about to be published in.
-	 * @param name
-	 * 			Name of the stream to publish.
-	 * @param mode
-	 * 			Publishing mode.
+	 * @param scope Scope the stream is about to be published in.
+	 * @param name Name of the stream to publish.
+	 * @param mode Publishing mode.
 	 * @return <code>True</code> if publishing is allowed, otherwise <code>False</code>
 	 */
 	public boolean isPublishAllowed(IScope scope, String name, String mode);

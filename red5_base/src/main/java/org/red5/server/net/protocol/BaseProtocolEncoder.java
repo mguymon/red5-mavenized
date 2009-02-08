@@ -3,7 +3,7 @@ package org.red5.server.net.protocol;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -37,8 +37,9 @@ public abstract class BaseProtocolEncoder implements SimpleProtocolEncoder {
 	/**
 	 * Generate error object to return for given exception.
 	 * 
-	 * @param call
-	 * @return
+	 * @param code call
+	 * @param error error
+	 * @return status object
 	 */
 	protected StatusObject generateErrorResult(String code, Throwable error) {
 		// Construct error object to return

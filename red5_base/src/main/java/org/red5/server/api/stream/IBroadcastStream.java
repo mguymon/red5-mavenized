@@ -3,7 +3,7 @@ package org.red5.server.api.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -65,7 +65,7 @@ public interface IBroadcastStream extends IStream {
 	 * Get the provider corresponding to this stream. Provider objects are
 	 * object that
 	 * 
-	 * @return
+	 * @return the provider
 	 */
 	IProvider getProvider();
 
@@ -88,16 +88,14 @@ public interface IBroadcastStream extends IStream {
 	/**
 	 * Add a listener to be notified about received packets.
 	 * 
-	 * @param listener
-	 * 				the listener to add
+	 * @param listener the listener to add
 	 */
 	public void addStreamListener(IStreamListener listener);
 	
 	/**
 	 * Remove a listener from being notified about received packets.
 	 * 
-	 * @param listener
-	 * 				the listener to remove
+	 * @param listener the listener to remove
 	 */
 	public void removeStreamListener(IStreamListener listener);
 	

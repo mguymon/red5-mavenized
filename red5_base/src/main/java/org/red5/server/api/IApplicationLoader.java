@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationContext;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -32,17 +32,17 @@ public interface IApplicationLoader {
 	/**
 	 * Load a new application for the given context path from a directory.
 	 * 
-	 * @param contextPath
-	 * @param virtualHosts
-	 * @param directory
-	 * @throws Exception
+	 * @param contextPath context path
+	 * @param virtualHosts virtual hosts
+	 * @param directory directory
+	 * @throws Exception for fun
 	 */
 	public void loadApplication(String contextPath, String virtualHosts, String directory) throws Exception;
 	
 	/**
 	 * Return the root {@link ApplicationContext}.
 	 * 
-	 * @return
+	 * @return application context
 	 */
 	public ApplicationContext getRootContext();
 }

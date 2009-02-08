@@ -3,7 +3,7 @@ package org.red5.server.stream.consumer;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -43,6 +43,7 @@ import org.red5.server.messaging.IPushableConsumer;
 import org.red5.server.messaging.OOBControlMessage;
 import org.red5.server.messaging.PipeConnectionEvent;
 import org.red5.server.net.rtmp.event.IRTMPEvent;
+import org.red5.server.net.rtmp.event.FlexStreamSend;
 import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.stream.IStreamData;
 import org.red5.server.stream.message.RTMPMessage;
@@ -97,8 +98,6 @@ public class FileConsumer implements Constants, IPushableConsumer,
 	public FileConsumer(IScope scope, File file) {
 		this.scope = scope;
 		this.file = file;
-		offset = 0;
-		lastTimestamp = 0;
 		startTimestamp = -1;
 		// Get the duration from the existing file
 		long duration = FLVReader.getDuration(file);
@@ -132,17 +131,26 @@ public class FileConsumer implements Constants, IPushableConsumer,
 		if (startTimestamp == -1) {
 			startTimestamp = msg.getTimestamp();
 		}
-		int timestamp = msg.getTimestamp() - startTimestamp;
+		
+		// if we're dealing with a FlexStreamSend IRTMPEvent, this avoids relative timestamp calculations
+		int timestamp = msg.getTimestamp();
+		if (!(msg instanceof FlexStreamSend)){
+			timestamp -= startTimestamp;
+			lastTimestamp = timestamp;
+		}
 		if (timestamp < 0) {
 			log.warn("Skipping message with negative timestamp.");
 			return;
 		}
-		lastTimestamp = timestamp;
 
 		ITag tag = new Tag();
-
 		tag.setDataType(msg.getDataType());
+
+		//Always add offset since it's needed for "append" publish mode
+		//It adds on disk flv file duration
+		//Search for "offset" in this class constructor
 		tag.setTimestamp(timestamp + offset);
+		
 		if (msg instanceof IStreamData) {
 			ByteBuffer data = ((IStreamData) msg).getData().asReadOnlyBuffer();
 			tag.setBodySize(data.limit());
@@ -166,7 +174,6 @@ public class FileConsumer implements Constants, IPushableConsumer,
      */
     public synchronized void onOOBControlMessage(IMessageComponent source, IPipe pipe,
 			OOBControlMessage oobCtrlMsg) {
-		// TODO Auto-generated method stub
 	}
 
     /**
@@ -210,12 +217,12 @@ public class FileConsumer implements Constants, IPushableConsumer,
 		File folder = file.getParentFile();
 		if (!folder.exists())
 			if (!folder.mkdirs())
-				throw new IOException("can't create parent folder");
+				throw new IOException("Could not create parent folder");
 		if (!file.isFile()) {
 			// Maybe the (previously existing) file has been deleted
 			file.createNewFile();
 		} else if (!file.canWrite()) {
-			throw new IOException("the file is read-only");
+			throw new IOException("The file is read-only");
 		}
 		IStreamableFileService service = factory.getService(file);
 		IStreamableFile flv = service.getStreamableFile(file);
@@ -224,7 +231,7 @@ public class FileConsumer implements Constants, IPushableConsumer,
 		} else if (mode.equals(IClientStream.MODE_APPEND)) {
 			writer = flv.getAppendWriter();
 		} else {
-			throw new IllegalStateException("illegal mode type: " + mode);
+			throw new IllegalStateException("Illegal mode type: " + mode);
 		}
 	}
 

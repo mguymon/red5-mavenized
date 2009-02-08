@@ -13,7 +13,7 @@ import javax.management.remote.JMXServiceURL;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -45,6 +45,22 @@ public class Shutdown {
 	 */
 	public static void main(String[] args) {
 		try {
+			
+			String policyFile = System.getProperty("java.security.policy");
+			if (policyFile == null) {
+				System.setProperty("java.security.debug", "failure");			
+				System.setProperty("java.security.policy", "conf/red5.policy");
+			}
+			
+			/*
+		    try {
+		        // Enable the security manager
+		        SecurityManager sm = new SecurityManager();
+		        System.setSecurityManager(sm);
+		    } catch (SecurityException se) {
+		    	System.err.println("Security manager already set");
+		    }
+		    */			
 			
 			JMXServiceURL url = null;
 			JMXConnector jmxc = null;

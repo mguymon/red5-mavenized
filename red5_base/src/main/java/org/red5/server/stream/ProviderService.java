@@ -3,7 +3,7 @@ package org.red5.server.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.red5.io.IStreamableFileFactory;
 import org.red5.io.IStreamableFileService;
+import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IBasicScope;
 import org.red5.server.api.IScope;
 import org.red5.server.api.ScopeUtils;
@@ -38,14 +39,10 @@ import org.red5.server.messaging.IPipe;
 import org.red5.server.messaging.InMemoryPullPullPipe;
 import org.red5.server.stream.provider.FileProvider;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * {@inheritDoc}
- */
 public class ProviderService implements IProviderService {
 
-	private static final Logger log = LoggerFactory.getLogger(ProviderService.class);
+	private static final Logger log = Red5LoggerFactory.getLogger(ProviderService.class);
 
 	/** {@inheritDoc} */
 	public INPUT_TYPE lookupProviderInput(IScope scope, String name) {

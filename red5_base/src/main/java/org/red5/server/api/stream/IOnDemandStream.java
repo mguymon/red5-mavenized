@@ -3,7 +3,7 @@ package org.red5.server.api.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -35,16 +35,14 @@ public interface IOnDemandStream extends IStream {
 	/**
 	 * Start playback with a given maximum duration.
 	 * 
-	 * @param length
-	 *            maximum duration in milliseconds
+	 * @param length maximum duration in milliseconds
 	 */
 	public void play(int length);
 
 	/**
 	 * Seek to the keyframe nearest to position
 	 * 
-	 * @param position
-	 *            position in milliseconds
+	 * @param position position in milliseconds
 	 */
 	public void seek(int position);
 

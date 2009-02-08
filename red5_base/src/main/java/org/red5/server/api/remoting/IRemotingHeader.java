@@ -3,7 +3,7 @@ package org.red5.server.api.remoting;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -45,14 +45,14 @@ public interface IRemotingHeader {
 	/**
 	 * Return name of header.
 	 * 
-	 * @return
+	 * @return name of header
 	 */
 	public String getName();
 	
 	/**
 	 * Return value of header.
 	 * 
-	 * @return
+	 * @return value of header
 	 */
 	public Object getValue();
 	
@@ -60,7 +60,7 @@ public interface IRemotingHeader {
 	 * Return boolean flag if receiver must process header before handling
 	 * other headers or messages.
 	 * 
-	 * @return
+	 * @return must understand
 	 */
 	public boolean getMustUnderstand();
 

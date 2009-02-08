@@ -3,7 +3,7 @@ package org.red5.io;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -44,7 +44,7 @@ public interface ITagReader {
 
 	/**
 	 * Return length in seconds
-     * @return
+     * @return length in seconds
      */
 	public long getDuration();
 
@@ -64,8 +64,7 @@ public interface ITagReader {
 	/**
 	 * Move the reader pointer to given position in file.
 	 * 
-	 * @param pos
-	 *            File position to move to
+	 * @param pos File position to move to
 	 */
 	public void position(long pos);
 
@@ -91,7 +90,7 @@ public interface ITagReader {
 	/**
 	 * Check if the reader also has video tags.
 	 * 
-	 * @return
+	 * @return has video
 	 */
 	public boolean hasVideo();
 

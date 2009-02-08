@@ -3,7 +3,7 @@ package org.red5.server.api.session;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -34,14 +34,14 @@ public interface ISession extends Serializable {
 	/**
 	 * Returns creation time in milliseconds.
 	 * 
-	 * @return
+	 * @return creation time
 	 */
 	public long getCreated();
 
 	/**
 	 * Returns the session's identifier.
 	 * 
-	 * @return
+	 * @return session id
 	 */
 	public String getSessionId();
 	
@@ -52,6 +52,7 @@ public interface ISession extends Serializable {
 	
 	/**
 	 * Returns the active state of the session.
+	 * @return is active
 	 */
 	public boolean isActive();
 	
@@ -63,28 +64,28 @@ public interface ISession extends Serializable {
 	/**
 	 * Sets the associated client id.
 	 * 
-	 * @param clientId
+	 * @param clientId client id
 	 */
 	public void setClientId(String clientId);
 
 	/**
 	 * Returns the client id associated with this session.
 	 * 
-	 * @return
+	 * @return client id
 	 */
 	public String getClientId();
 	
 	/**
 	 * Sets where session resources will be located if persisted to disk.
 	 * 
-	 * @param destinationDirectory
+	 * @param destinationDirectory destination directory
 	 */
 	public void setDestinationDirectory(String destinationDirectory);
 
     /**
      * Returns the directory used to store session resources.
      *
-     * @return
+     * @return destination directory
      */	
 	public String getDestinationDirectory();
 	

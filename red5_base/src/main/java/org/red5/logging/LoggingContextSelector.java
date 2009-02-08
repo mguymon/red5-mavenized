@@ -3,7 +3,7 @@ package org.red5.logging;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -80,10 +80,8 @@ public class LoggingContextSelector implements ContextSelector {
 				loggerContext = new LoggerContext();
 				loggerContext.setName(contextName);
 
-				//if (contextConfigFile == null) {
-					contextConfigFile = String.format("logback-%s.xml", contextName);
-					System.out.printf("Context logger config file: %s\n", contextConfigFile);
-				//}
+				contextConfigFile = String.format("logback-%s.xml", contextName);
+				System.out.printf("Context logger config file: %s\n", contextConfigFile);
 				
 				ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 				//System.out.printf("Thread context cl: %s\n", classloader);
@@ -165,7 +163,7 @@ public class LoggingContextSelector implements ContextSelector {
 	 * They provide a way to tell the selector which context to use, thus saving
 	 * the cost of a JNDI call at each new request.
 	 * 
-	 * @param context
+	 * @param context logging context
 	 */
 	public void setLocalContext(LoggerContext context) {
 		threadLocal.set(context);

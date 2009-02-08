@@ -3,7 +3,7 @@ package org.red5.server.api.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -30,10 +30,8 @@ public interface IStreamListener {
 	/**
 	 * A packet has been received from a stream.
 	 * 
-	 * @param stream
-	 * 			the stream the packet has been received for
-	 * @param packet
-	 * 			the packet received
+	 * @param stream the stream the packet has been received for
+	 * @param packet the packet received
 	 */
 	public void packetReceived(IBroadcastStream stream, IStreamPacket packet);
 	

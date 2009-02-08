@@ -3,7 +3,7 @@ package org.red5.server.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.io.amf.Output;
 import org.red5.io.object.Serializer;
+import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IScope;
 import org.red5.server.api.scheduling.IScheduledJob;
 import org.red5.server.api.scheduling.ISchedulingService;
@@ -63,7 +64,6 @@ import org.red5.server.stream.message.RTMPMessage;
 import org.red5.server.stream.message.ResetMessage;
 import org.red5.server.stream.message.StatusMessage;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A play engine for playing an IPlayItem.
@@ -75,7 +75,7 @@ import org.slf4j.LoggerFactory;
 public final class PlayEngine implements IFilter, IPushableConsumer,
 		IPipeConnectionListener, ITokenBucketCallback {
 
-	private static final Logger log = LoggerFactory.getLogger(PlayEngine.class);
+	private static final Logger log = Red5LoggerFactory.getLogger(PlayEngine.class);
 
 	private IMessageInput msgIn;
 
@@ -276,7 +276,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 	 * @param item                  Playlist item
 	 * @throws StreamNotFoundException       Stream not found
 	 * @throws IllegalStateException         Stream is in stopped state
-	 * @throws IOException
+	 * @throws IOException Stream had io exception
 	 */
 	public void play(IPlayItem item) throws StreamNotFoundException,
 			IllegalStateException, IOException {
@@ -289,7 +289,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 	 * @param withReset				Send reset status before playing.
 	 * @throws StreamNotFoundException       Stream not found
 	 * @throws IllegalStateException         Stream is in stopped state
-	 * @throws IOException
+	 * @throws IOException Stream had IO exception
 	 */
 	public synchronized void play(IPlayItem item, boolean withReset)
 			throws StreamNotFoundException, IllegalStateException, IOException {
@@ -534,6 +534,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 	 * Seek position in file
 	 * @param position                  Position
 	 * @throws IllegalStateException    If stream is in stopped state
+	 * @throws OperationNotSupportedException If this object doesn't support the operation.
 	 */
 	public synchronized void seek(int position) throws IllegalStateException,
 			OperationNotSupportedException {
@@ -1396,7 +1397,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 	/**
 	 * Returns true if the engine currently receives audio.
 	 * 
-	 * @return
+	 * @return engine receives audio
 	 */
 	public boolean receiveAudio() {
 		return receiveAudio;
@@ -1406,7 +1407,8 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 	 * Returns true if the engine currently receives audio and
 	 * sets the new value.
 	 * 
-	 * @return
+	 * @param receive new value
+	 * @return old value
 	 */
 	public boolean receiveAudio(boolean receive) {
 		boolean oldValue = receiveAudio;
@@ -1420,7 +1422,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 	/**
 	 * Returns true if the engine currently receives video.
 	 * 
-	 * @return
+	 * @return receive video
 	 */
 	public boolean receiveVideo() {
 		return receiveVideo;
@@ -1429,8 +1431,8 @@ public final class PlayEngine implements IFilter, IPushableConsumer,
 	/**
 	 * Returns true if the engine currently receives video and
 	 * sets the new value.
-	 * 
-	 * @return
+	 * @param receive new value
+	 * @return old value
 	 */
 	public boolean receiveVideo(boolean receive) {
 		boolean oldValue = receiveVideo;

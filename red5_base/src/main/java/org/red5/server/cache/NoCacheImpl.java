@@ -3,7 +3,7 @@ package org.red5.server.cache;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -54,7 +54,7 @@ public class NoCacheImpl implements ICacheStore, ApplicationContextAware {
 	/**
 	 * Returns the instance of this class.
 	 * 
-	 * @return
+	 * @return class instance
 	 */
 	public static NoCacheImpl getInstance() {
 		if (instance == null) {

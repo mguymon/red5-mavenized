@@ -6,7 +6,7 @@ import java.io.ObjectOutput;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -72,6 +72,7 @@ public class Ping extends BaseEvent {
 
 	private short value1; // XXX: can someone suggest better names?
 
+	// 4 least significant bytes of timestamp for PING_CLIENT and PONG_SERVER
 	private int value2;
 
 	private int value3 = UNDEFINED;

@@ -3,7 +3,7 @@ package org.red5.logging;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -84,11 +84,18 @@ public class Red5LoggerFactory {
 		ContextSelector selector = StaticLoggerBinder.getSingleton()
 				.getContextSelector();
 		//get the context for the given context name or default if null
-		LoggerContext ctx = contextName == null ? selector.getLoggerContext() : selector.getLoggerContext(contextName);
+		LoggerContext ctx = null;
+		if (contextName != null && contextName.length() > 0)
+		{
+			ctx = selector.getLoggerContext(contextName);
+		}
+		// and if we get here, fall back to the default context
+		if (ctx == null)
+			ctx = selector.getLoggerContext(); 
 		//debug
 		//StatusPrinter.print(ctx);
 		
-		return ctx.getLogger(clazz);
+		return ctx != null ? ctx.getLogger(clazz) : null;
 	}
 
 }

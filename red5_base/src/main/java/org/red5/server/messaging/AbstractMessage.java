@@ -3,7 +3,7 @@ package org.red5.server.messaging;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -27,21 +27,9 @@ import java.util.Map;
  * @see org.red5.server.messaging.IMessage
  */
 public class AbstractMessage implements IMessage {
-    /**
-     * {@inheritDoc}
-     */
     protected String messageID;
-    /**
-     * {@inheritDoc}
-     */
 	protected String correlationID;
-    /**
-     * {@inheritDoc}
-     */
 	protected String messageType;
-    /**
-     * {@inheritDoc}
-     */
 	protected Map<?, ?> extraHeaders = null;
 
 	/** {@inheritDoc} */

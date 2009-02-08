@@ -3,7 +3,7 @@ package org.red5.server.api.persistence;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -71,13 +71,11 @@ public class PersistenceUtils {
 	 * that stores persistence objects and provides methods to manipulate them
 	 * (save, load, remove, list).
 	 * 
-	 * @param resolver
-	 *            Resolves connection pattern into Resource object
-	 * @param className
-	 *            Name of persistence class
+	 * @param resolver Resolves connection pattern into Resource object
+	 * @param className Name of persistence class
 	 * @return IPersistence store object that provides methods for persistence
 	 *         object handling
-	 * @throws Exception
+	 * @throws Exception if error
 	 */
 	public static IPersistenceStore getPersistenceStore(
 			ResourcePatternResolver resolver, String className)

@@ -3,7 +3,7 @@ package org.red5.server.service;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -46,8 +46,8 @@ public class EchoService implements IEchoService {
 		log.info("The Echo Service has started...");
 	}
 
-	/** 
-	 * @see org.red5.samples.services.IEchoService#echoBoolean(boolean)
+	/**
+	 * {@inheritDoc} 
 	 */
 	public boolean echoBoolean(boolean bool) {
 		log.info("echoBoolean: {}", bool);
@@ -55,40 +55,36 @@ public class EchoService implements IEchoService {
 	}
 
 	/**
-	 * @see org.red5.samples.services.IEchoService#echoNumber(double)
-	 */
+	 * {@inheritDoc}	 */
 	public double echoNumber(double number) {
 		log.info("echoNumber: {}", number);
 		return number;
 	}
 
 	/**
-	 * @see org.red5.samples.services.IEchoService#echoString(java.lang.String)
-	 */
+	 * {@inheritDoc}	 */
 	public String echoString(String string) {
 		log.info("echoString: {}", string);
 		return string;
 	}
 
 	/**
-	 * @see org.red5.samples.services.IEchoService#echoDate(java.util.Date)
-	 */
+	 * {@inheritDoc}	 */
 	public Date echoDate(Date date) {
 		log.info("echoDate: {}", date);
 		return date;
 	}
 
 	/**
-	 * @see org.red5.samples.services.IEchoService#echoObject(java.util.Map)
+	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("unchecked")
-	public Map echoObject(Map obj) {
+	public Object echoObject(Object obj) {
 		log.info("echoObject: {}", obj);
 		return obj;
 	}
 
 	/**
-	 * @see org.red5.samples.services.IEchoService#echoArray(java.lang.Object[])
+	 * {@inheritDoc}
 	 */
 	public Object[] echoArray(Object[] array) {
 		log.info("echoArray: {}", array);
@@ -96,7 +92,7 @@ public class EchoService implements IEchoService {
 	}
 
 	/**
-	 * @see org.red5.samples.services.IEchoService#echoList(java.util.List)
+	 * {@inheritDoc}
 	 */
 	@SuppressWarnings("unchecked")
 	public List echoList(List list) {
@@ -105,7 +101,7 @@ public class EchoService implements IEchoService {
 	}
 
 	/**
-	 * @see org.red5.samples.services.IEchoService#echoXML(org.w3c.dom.Document)
+	 * {@inheritDoc}
 	 */
 	public Document echoXML(Document xml) {
 		log.info("echoXML: {}", xml);
@@ -130,7 +126,7 @@ public class EchoService implements IEchoService {
 	/**
 	 * Test serialization of arbitrary objects.
 	 * 
-	 * @param any
+	 * @param any object to echo
 	 * @return list containing distinct objects
 	 */
 	public List<Object> returnDistinctObjects(Object any) {
@@ -144,7 +140,7 @@ public class EchoService implements IEchoService {
 	/**
 	 * Test references.
 	 * 
-	 * @param any
+	 * @param any object to echo
 	 * @return list containing same objects
 	 */
 	public List<Object> returnSameObjects(Object any) {
@@ -159,7 +155,7 @@ public class EchoService implements IEchoService {
 	/**
 	 * Test returning of internal objects.
 	 * 
-	 * @param any
+	 * @param any object to echo
 	 * @return the current connection
 	 */
 	public IConnection returnConnection(Object any) {

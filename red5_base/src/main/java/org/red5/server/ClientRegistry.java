@@ -3,7 +3,7 @@ package org.red5.server;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -163,7 +163,7 @@ public class ClientRegistry implements IClientRegistry, ClientRegistryMBean {
 	 *
 	 * @param id          Client id
 	 * @return            Client object associated with given id
-	 * @throws ClientNotFoundException
+	 * @throws ClientNotFoundException if we can't find client
 	 */
 	public IClient lookupClient(String id) throws ClientNotFoundException {
 		return getClient(id);
@@ -174,8 +174,8 @@ public class ClientRegistry implements IClientRegistry, ClientRegistryMBean {
 	 *
 	 * @param params                         Client params
 	 * @return                               Client object
-	 * @throws ClientNotFoundException
-	 * @throws ClientRejectedException
+	 * @throws ClientNotFoundException if client not found
+	 * @throws ClientRejectedException if client rejected
 	 */
 	public IClient newClient(Object[] params) throws ClientNotFoundException,
 			ClientRejectedException {

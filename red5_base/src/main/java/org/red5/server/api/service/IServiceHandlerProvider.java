@@ -3,7 +3,7 @@ package org.red5.server.api.service;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -40,26 +40,22 @@ public interface IServiceHandlerProvider {
 	 * provides a method "<code>callMe</code>", you can call a method
 	 * "<code>one.two.callMe</code>" from the client.</p>
 	 * 
-	 * @param name
-	 * 			the name of the handler
-	 * @param handler
-	 * 			the handler object
+	 * @param name the name of the handler
+	 * @param handler the handler object
 	 */
 	public void registerServiceHandler(String name, Object handler);
 
 	/**
 	 * Unregister service handler.
 	 * 
-	 * @param name
-	 * 			the name of the handler
+	 * @param name the name of the handler
 	 */
 	public void unregisterServiceHandler(String name);
 
 	/**
 	 * Return a previously registered service handler.
 	 * 
-	 * @param name
-	 * 			the name of the handler to return
+	 * @param name the name of the handler to return
 	 * @return the previously registered handler
 	 */
 	public Object getServiceHandler(String name);

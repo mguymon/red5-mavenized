@@ -3,7 +3,7 @@ package org.red5.server.service;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -29,18 +29,15 @@ import org.red5.server.api.IScope;
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Joachim Bauch (jojo@struktur.de)
- * @see org.red5.server.service.ServiceInvoker#getServiceHandler(IScope, String)
  */
 public interface IServiceResolver {
 
 	/**
 	 * Search for a service with the given name in the scope.
 	 * 
-	 * @param scope
-	 * 			the scope to search in
-	 * @param serviceName
-	 * 			the name of the service
-	 * @return the object implemening the service or <code>null</code> if
+	 * @param scope the scope to search in
+	 * @param serviceName the name of the service
+	 * @return the object implementing the service or <code>null</code> if
 	 *         service doesn't exist
 	 */
 	public Object resolveService(IScope scope, String serviceName);

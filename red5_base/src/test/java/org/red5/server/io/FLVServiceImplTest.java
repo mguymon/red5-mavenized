@@ -3,7 +3,7 @@ package org.red5.server.io;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2008 by respective authors. All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -49,7 +49,6 @@ public class FLVServiceImplTest extends TestCase {
 	/**
 	 * SetUp is called before each test
 	 * 
-	 * @return void
 	 */
 	@Override
 	public void setUp() {
@@ -61,14 +60,13 @@ public class FLVServiceImplTest extends TestCase {
 	/**
 	 * Tests: getFlv(String s)
 	 * 
-	 * @param tag
-	 * @return void
-	 * @throws IOException,
-	 *             FileNotFoundException
+	 * @param tag tag
+	 * @throws IOException if io error
+	 * @throws FileNotFoundException if file not found
 	 */
 	/*
 	 * public void testFLVString() throws FileNotFoundException, IOException {
-	 * FLV flv = service.getFLV("src/test/resources/fixtures/test_cue.flv"); Reader reader =
+	 * FLV flv = service.getFLV("fixtures/test_cue.flv"); Reader reader =
 	 * flv.reader(); Tag tag = null;
 	 * 
 	 * while(reader.hasMoreTags()) { tag = reader.readTag(); //printTag(tag); }
@@ -84,9 +82,8 @@ public class FLVServiceImplTest extends TestCase {
 	/**
 	 * Tests: getFLVFile(File f)
 	 * 
-	 * @return void
-	 * @throws IOException
-	 * @throws FileNotFoundException
+	 * @throws IOException if io error
+	 * @throws FileNotFoundException if file not found
 	 */
 	public void testFLVFile() throws FileNotFoundException, IOException {
 		File f = new File("src/test/resources/fixtures/test.flv");
@@ -120,7 +117,7 @@ public class FLVServiceImplTest extends TestCase {
 	/*
 	 * public void testFLVFileInputStreamKeyFrameAnalyzer() throws
 	 * FileNotFoundException, IOException { File f = new
-	 * File("src/test/resources/fixtures/test_cue3.flv"); FileInputStream fis = new
+	 * File("fixtures/test_cue3.flv"); FileInputStream fis = new
 	 * FileInputStream(f); FLV flv = service.getFLV(fis); Reader reader =
 	 * flv.reader(); reader.analyzeKeyFrames();
 	 * 
@@ -131,12 +128,11 @@ public class FLVServiceImplTest extends TestCase {
 	/**
 	 * Tests: getFLVFileInputStream(FileInputStream fis)
 	 * 
-	 * @return void
 	 * @throws IOException
 	 */
 	/*
 	 * public void testFLVFileInputStream() throws FileNotFoundException,
-	 * IOException { File f = new File("src/test/resources/fixtures/test_cue3.flv"); FileInputStream
+	 * IOException { File f = new File("fixtures/test_cue3.flv"); FileInputStream
 	 * fis = new FileInputStream(f); FLV flv = service.getFLV(fis); Reader
 	 * reader = flv.reader(); Tag tag = null;
 	 * 
@@ -147,14 +143,14 @@ public class FLVServiceImplTest extends TestCase {
 
 	/*
 	 * public void testWriteFLVFileOutputStream() throws IOException { File f =
-	 * new File("src/test/resources/fixtures/test_cue2.flv");
+	 * new File("fixtures/test_cue2.flv");
 	 * 
 	 * if(f.exists()) { f.delete(); }
 	 *  // Create new file f.createNewFile(); FileOutputStream fos = new
 	 * FileOutputStream(f); //fos.write((byte)0x01); FLV flv =
 	 * service.getFLV(fos); Writer writer = flv.writer();
 	 *  // Create a reader for testing File readfile = new
-	 * File("src/test/resources/fixtures/test_cue.flv"); FileInputStream fis = new
+	 * File("fixtures/test_cue.flv"); FileInputStream fis = new
 	 * FileInputStream(readfile); FLV readflv = service.getFLV(fis); Reader
 	 * reader = readflv.reader();
 	 * 

@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -72,8 +72,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter implements
 	/**
 	 * Setter for handler.
 	 * 
-	 * @param handler
-	 *            RTMP events handler
+	 * @param handler RTMP events handler
 	 */
 	public void setHandler(IRTMPHandler handler) {
 		this.handler = handler;
@@ -82,8 +81,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter implements
 	/**
 	 * Setter for mode.
 	 * 
-	 * @param mode
-	 *            <code>true</code> if handler should work in server mode,
+	 * @param mode <code>true</code> if handler should work in server mode,
 	 *            <code>false</code> otherwise
 	 */
 	public void setMode(boolean mode) {
@@ -93,8 +91,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter implements
 	/**
 	 * Setter for codec factory.
 	 * 
-	 * @param codecFactory
-	 *            RTMP protocol codec factory
+	 * @param codecFactory RTMP protocol codec factory
 	 */
 	public void setCodecFactory(ProtocolCodecFactory codecFactory) {
 		this.codecFactory = codecFactory;

@@ -3,7 +3,7 @@ package org.red5.io.flv.meta;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.mina.common.ByteBuffer;
+
 import org.red5.io.ITag;
 import org.red5.io.IoConstants;
 import org.red5.io.amf.Input;
@@ -85,8 +86,7 @@ public class MetaService implements IMetaService {
 	}
 
 	/**
-	 * @param resolver
-	 *            The resolver to set.
+	 * @param resolver The resolver to set.
 	 */
 	public void setResolver(Resolver resolver) {
 		this.resolver = resolver;
@@ -100,8 +100,7 @@ public class MetaService implements IMetaService {
 	}
 
 	/**
-	 * @param deserializer
-	 *            The deserializer to set.
+	 * @param deserializer The deserializer to set.
 	 */
 	public void setDeserializer(Deserializer deserializer) {
 		this.deserializer = deserializer;
@@ -115,8 +114,7 @@ public class MetaService implements IMetaService {
 	}
 
 	/**
-	 * @param serializer
-	 *            The serializer to set.
+	 * @param serializer The serializer to set.
 	 */
 	public void setSerializer(Serializer serializer) {
 		this.serializer = serializer;
@@ -319,8 +317,7 @@ public class MetaService implements IMetaService {
 	}
 
 	/**
-	 * @param file
-	 *            The file to set.
+	 * @param file The file to set.
 	 */
 	public void setFile(File file) {
 		this.file = file;
@@ -345,6 +342,7 @@ public class MetaService implements IMetaService {
 		    deserializer = new Deserializer();
 		}
 		String metaType = deserializer.deserialize(input, String.class);
+		
 		Map<String, ?> m = deserializer.deserialize(input, Map.class);
 		retMeta.putAll(m);
 		return retMeta;

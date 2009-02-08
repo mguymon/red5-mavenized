@@ -4,7 +4,7 @@ package org.red5.io.utils;
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
  * Copyright (C) 2005 Tatu Saloranta
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -72,20 +72,20 @@ public class Stax2DomBuilder {
 	 * Whether all-whitespace text segment is ignorable white space or not is
 	 * based on DTD read in, as per XML specifications (white space is only
 	 * significant in mixed content or pure text elements).
+	 * @param ignoreWS true to ignore whitespace; false otherwise. 
 	 */
-	public void setIgnoreWhitespace(boolean state) {
-		mCfgIgnoreWs = state;
+	public void setIgnoreWhitespace(boolean ignoreWS) {
+		mCfgIgnoreWs = ignoreWS;
 	}
 
 	/**
 	 * This method will create a {@link org.w3c.dom.Document} instance using the
 	 * default JAXP mechanism and populate using the given StAX stream reader.
 	 * 
-	 * @param r
-	 *            Stream reader from which input is read.
+	 * @param r Stream reader from which input is read.
 	 * @return <code>Document</code> - DOM document object.
-	 * @throws XMLStreamException
-	 *             If the reader threw such exception (to indicate a parsing or
+	 * @throws ParserConfigurationException if parse is not configured
+	 * @throws XMLStreamException If the reader threw such exception (to indicate a parsing or
 	 *             I/O problem)
 	 */
 	public Document build(XMLStreamReader r)
@@ -105,11 +105,9 @@ public class Stax2DomBuilder {
 	 * This method will populate given {@link org.w3c.dom.Document} using the
 	 * given StAX stream reader instance.
 	 * 
-	 * @param r
-	 *            Stream reader from which input is read.
-	 * @return <code>Document</code> - DOM document object.
-	 * @throws XMLStreamException
-	 *             If the reader threw such exception (to indicate a parsing or
+	 * @param r Stream reader from which input is read.
+	 * @param doc <code>Document</code> - DOM document object.
+	 * @throws XMLStreamException If the reader threw such exception (to indicate a parsing or
 	 *             I/O problem)
 	 */
 	public void build(XMLStreamReader r, Document doc)
@@ -123,18 +121,10 @@ public class Stax2DomBuilder {
 	 * relationship; this improves performance somewhat (classic
 	 * recursion-by-iteration-and-explicit stack transformation)
 	 * 
-	 * @param f
-	 *            Node factory to use for creating JDOM nodes
-	 * @param r
-	 *            Stream reader to use for reading the document from which to
+	 * @param r Stream reader to use for reading the document from which to
 	 *            build the tree
-	 * @param doc
-	 *            JDOM <code>Document</code> being built.
-	 * @param tmod
-	 *            Text modifier to use for modifying content of text nodes
-	 *            (CHARACTERS, not CDATA), if any; null if no modifications are
-	 *            needed (modifier is usually used for trimming unnecessary but
-	 *            non-ignorable white space).
+	 * @param doc JDOM <code>Document</code> being built.
+	 * @throws XMLStreamException for fun
 	 */
 	protected void buildTree(XMLStreamReader r, Document doc)
 			throws XMLStreamException {

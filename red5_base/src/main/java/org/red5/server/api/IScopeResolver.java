@@ -5,7 +5,7 @@ import org.red5.server.exception.ScopeNotFoundException;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -37,21 +37,17 @@ public interface IScopeResolver {
 	/**
 	 * Get the scope for a given path.
 	 * 
-	 * @param path
-	 * 			    Path to return the scope for
+	 * @param path Path to return the scope for
 	 * @return      Scope for passed path
-	 * @throws ScopeNotFoundException
-	 *             If scope doesn't exist an can't be created
+	 * @throws ScopeNotFoundException If scope doesn't exist an can't be created
 	 */
 	public IScope resolveScope(String path);
 
 	/**
 	 * Get the scope for a given path from a root scope.
 	 * 
-	 * @param root
-	 * 				The scope to start traversing from.
-	 * @param path
-	 * 				Path to return the scope for.
+	 * @param root The scope to start traversing from.
+	 * @param path Path to return the scope for.
 	 * @return		Scope for passed path.
 	 */
 	public IScope resolveScope(IScope root, String path);

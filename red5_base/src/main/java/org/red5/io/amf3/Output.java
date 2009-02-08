@@ -3,7 +3,7 @@ package org.red5.io.amf3;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -21,6 +21,7 @@ package org.red5.io.amf3;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
@@ -47,6 +48,7 @@ import org.w3c.dom.Document;
  * @see  org.red5.io.amf3.Input
  * @author The Red5 Project (red5@osflash.org)
  * @author Joachim Bauch (jojo@struktur.de)
+ * @author Harald Radi (harald.radi@nme.at)
  */
 public class Output extends org.red5.io.amf.Output implements org.red5.io.object.Output {
 
@@ -64,8 +66,7 @@ public class Output extends org.red5.io.amf.Output implements org.red5.io.object
 	/**
 	 * Constructor of AMF3 output.
 	 *
-	 * @param buf
-	 *            instance of ByteBuffer
+	 * @param buf instance of ByteBuffer
 	 * @see ByteBuffer
 	 */
 	public Output(ByteBuffer buf) {
@@ -117,7 +118,6 @@ public class Output extends org.red5.io.amf.Output implements org.red5.io.object
 		buf.put(AMF3.TYPE_NULL);
 	}
 
-    /** {@inheritDoc} */
 	protected void putInteger(long value) {
 		if (value < 0) {
 			buf.put((byte) (0x80 | ((value >> 22) & 0xff)));
@@ -141,7 +141,6 @@ public class Output extends org.red5.io.amf.Output implements org.red5.io.object
 		}
 	}
 
-	/** {@inheritDoc} */
     protected static byte[] encodeString(String string) {
     	byte[] encoded;
     	synchronized (stringCache) {
@@ -158,7 +157,6 @@ public class Output extends org.red5.io.amf.Output implements org.red5.io.object
     	return encoded;
     }
 
-	/** {@inheritDoc} */
 	protected void putString(String str, byte[] encoded) {
 		final int len = encoded.length;
 		int pos = stringReferences.indexOf(str);
@@ -393,11 +391,13 @@ public class Output extends org.red5.io.amf.Output implements org.red5.io.object
     	amf3_mode += 1;
         // Iterate thru fields of an object to build "name-value" map from it
         for (Field field : objectClass.getFields()) {
+	        String fieldName = field.getName();
+
         	log.debug("Field: {} class: {}", field, objectClass);
             // Check if the Field corresponding to the getter/setter pair is transient
-            if (field == null || !serializer.serializeField(field)) {
-            	continue;
-            }
+	        if (!serializeField(serializer, objectClass, fieldName, field, null)) {
+		        continue;
+	        }
 
 			Object value;
 			try {
@@ -409,9 +409,9 @@ public class Output extends org.red5.io.amf.Output implements org.red5.io.object
 			}
 
             // Write out prop name
-			putString(field.getName());
+			putString(fieldName);
             // Write out
-            serializer.serialize(this, field, value);
+            serializer.serialize(this, field, null, value);
 		}
     	amf3_mode -= 1;
         // Write out end of object marker
@@ -459,7 +459,7 @@ public class Output extends org.red5.io.amf.Output implements org.red5.io.object
         // Create new map out of bean properties
         BeanMap beanMap = new BeanMap(object);
         // Set of bean attributes
-        Set<Map.Entry<?, ?>> set = beanMap.entrySet();
+        Set set = beanMap.keySet();
 		if ((set.size() == 0) || (set.size() == 1 && beanMap.containsKey("class"))) {
 			// BeanMap is empty or can only access "class" attribute, skip it
 			writeArbitraryObject(object, serializer);
@@ -477,19 +477,20 @@ public class Output extends org.red5.io.amf.Output implements org.red5.io.object
 
     	// Store key/value pairs
     	amf3_mode += 1;
-    	for (Map.Entry<?, ?> entry: set) {
-			String fieldName = entry.getKey().toString();
+    	for (Object key: set) {
+			String fieldName = key.toString();
             log.debug("Field name: {} class: {}", fieldName, objectClass);
 
 			Field field = getField(objectClass, fieldName);
+			Method getter = getGetter(objectClass, fieldName);
 
 			// Check if the Field corresponding to the getter/setter pair is transient
-            if (field == null || !serializer.serializeField(field)) {
-            	continue;
-            }
+		    if (!serializeField(serializer, objectClass, fieldName, field, getter)) {
+			    continue;
+		    }
 
 			putString(fieldName);
-			serializer.serialize(this, field, entry.getValue());
+			serializer.serialize(this, field, getter, beanMap.get(key));
 		}
     	amf3_mode -= 1;
 

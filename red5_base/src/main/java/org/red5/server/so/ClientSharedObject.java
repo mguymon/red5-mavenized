@@ -3,7 +3,7 @@ package org.red5.server.so;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -77,10 +77,8 @@ public class ClientSharedObject extends SharedObject implements
 	/**
 	 * Create new client SO with
 	 * 
-	 * @param name
-	 *            Shared Object name
-	 * @param persistent
-	 *            Persistence flag
+	 * @param name Shared Object name
+	 * @param persistent Persistence flag
 	 */
 	public ClientSharedObject(String name, boolean persistent) {
 		super();
@@ -91,8 +89,7 @@ public class ClientSharedObject extends SharedObject implements
 	/**
 	 * Connect the shared object using the passed connection.
 	 * 
-	 * @param conn
-	 *            Attach SO to given connection
+	 * @param conn Attach SO to given connection
 	 */
 	public void connect(IConnection conn) {
 		if (!(conn instanceof RTMPConnection))

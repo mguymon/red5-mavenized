@@ -3,7 +3,7 @@ package org.red5.io.object;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Method;
 
 import org.apache.commons.beanutils.BeanMap;
 import org.red5.io.amf3.ByteArray;
@@ -43,6 +44,7 @@ import org.w3c.dom.Document;
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @author Harald Radi (harald.radi@nme.at)
  */
 public class Serializer {
 
@@ -54,26 +56,22 @@ public class Serializer {
 	/**
 	 * Serializes output to a core data type object
 	 * 
-	 * @param out
-	 *            Output writer
-	 * @param any
-	 *            Object to serialize
+	 * @param out Output writer
+	 * @param any Object to serialize
 	 */
 	public void serialize(Output out, Object any) {
-		serialize(out, null, any);
+		serialize(out, null, null, any);
 	}
 
 	/**
 	 * Serializes output to a core data type object
 	 * 
-	 * @param out
-	 *            Output writer
-	 * @param field
-	 *            The field to serialize
-	 * @param any
-	 *            Object to serialize
+	 * @param out Output writer
+	 * @param field The field to serialize
+	 * @param getter The getter method if not a field
+	 * @param any Object to serialize
 	 */
-	public void serialize(Output out, Field field, Object any) {
+	public void serialize(Output out, Field field, Method getter, Object any) {
 		log.debug("serialize");
 		if (any instanceof IExternalizable) {
 			// Make sure all IExternalizable objects are serialized as objects
@@ -125,10 +123,8 @@ public class Serializer {
 	/**
 	 * Writes a complex type object out
 	 * 
-	 * @param out
-	 *            Output writer
-	 * @param complex
-	 *            Complex datatype object
+	 * @param out Output writer
+	 * @param complex Complex datatype object
 	 * @return boolean true if object was successfully serialized, false
 	 *         otherwise
 	 */
@@ -309,8 +305,7 @@ public class Serializer {
 	 * Pre processes an object TODO // must be implemented
 	 * 
 	 * @return Prerocessed object
-	 * @param any
-	 *            Object to preprocess
+	 * @param any Object to preprocess
 	 */
 	public Object preProcessExtension(Object any) {
 		// Does nothing right now but will later
@@ -320,10 +315,8 @@ public class Serializer {
 	/**
 	 * Writes a custom data to the output
 	 * 
-	 * @param out
-	 *            Output writer
-	 * @param obj
-	 *            Custom data
+	 * @param out Output writer
+	 * @param obj Custom data
 	 * @return <code>true</code> if the object has been written, otherwise
 	 *         <code>false</code>
 	 */
@@ -340,28 +333,27 @@ public class Serializer {
 	/**
 	 * Checks whether the field should be serialized or not
 	 * 
-	 * @param field
-	 *            The field to be serialized
+	 * @param keyName key name
+	 * @param field The field to be serialized
+	 * @param getter Getter method for field
 	 * @return <code>true</code> if the field should be serialized, otherwise
 	 *         <code>false</code>
 	 */
-	public boolean serializeField(Field field) {
+	public boolean serializeField(String keyName, Field field, Method getter) {
+		if ("class".equals(keyName)) return false;
+
+		if (field != null && Modifier.isTransient(field.getModifiers())) {
+			log.warn("Using \"transient\" to declare fields not to be serialized is deprecated and will be removed in Red5 0.8, use \"@DontSerialize\" instead.");
+			return false;
+		}
+
+		if ((field != null && field.isAnnotationPresent(DontSerialize.class)) || (getter != null && getter.isAnnotationPresent(DontSerialize.class))) {
+			log.debug("Skipping {} because its marked with @DontSerialize", keyName);
+			return false;
+		}
+
 		log.debug("Serialize field: {}", field);
-		// null fields must be prevented from reaching this method
-		boolean dontSerialize = field.isAnnotationPresent(DontSerialize.class);
-		if (dontSerialize) {
-			log.debug("Skipping {} because its marked with @DontSerialize",
-					field.getName());
-		}
 
-		boolean isTransient = Modifier.isTransient(field.getModifiers());
-		if (isTransient) {
-			log
-					.warn("Using \"transient\" to declare fields not to be serialized is deprecated and will be removed in Red5 0.8, use \"@DontSerialize\" instead.");
-		}
-
-		boolean isClass = "class".equals(field.getName());
-
-		return !(dontSerialize || isTransient || isClass);
+		return true;
 	}
 }

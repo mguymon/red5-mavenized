@@ -3,7 +3,7 @@ package org.red5.server.net.remoting;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -52,6 +52,7 @@ import org.red5.server.net.servlet.ServletUtils;
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Joachim Bauch (jojo@struktur.de)
+ * @author Paul Gregoire (mondain@gmail.com)
  */
 public class RemotingConnection implements IRemotingConnection {
 
@@ -89,6 +90,7 @@ public class RemotingConnection implements IRemotingConnection {
 	 *
      * @param request           Servlet request
      * @param scope             Scope
+     * @param packet packet
      */
     public RemotingConnection(HttpServletRequest request, IScope scope, RemotingPacket packet) {
 		this.request = request;
@@ -106,7 +108,7 @@ public class RemotingConnection implements IRemotingConnection {
     /**
      * Return string representation of the connection.
      * 
-     * @return
+     * @return string
      */
     public String toString() {
 		return getClass().getSimpleName() + " from " + getRemoteAddress() + ':'
@@ -491,6 +493,27 @@ public class RemotingConnection implements IRemotingConnection {
 	public Collection<IRemotingHeader> getHeaders() {
 		return headers;
 	}
+
+	/** {@inheritDoc} */
+	public long getClientBytesRead() {
+		// This is not supported for Remoting connections
+		return 0;
+	}	
+	
+	/**
+	 * Cleans up the remoting connection client from the HttpSession and client
+	 * registry.
+	 * This should also fix APPSERVER-328 
+	 */
+	public void cleanup() {
+		if (session != null) {
+			RemotingClient rc = (RemotingClient) session.getAttribute(CLIENT);
+			session.removeAttribute(CLIENT);
+			if (rc != null) {
+				rc.unregister(this);
+			}
+		}		
+	}
 	
 	/** Internal class for clients connected through Remoting. */
 	private class RemotingClient extends Client {
@@ -509,12 +532,11 @@ public class RemotingConnection implements IRemotingConnection {
 			super.register(conn);
 		}
 
-	}
-
-	/** {@inheritDoc} */
-	public long getClientBytesRead() {
-		// This is not supported for Remoting connections
-		return 0;
+		@Override
+		protected void unregister(IConnection conn) {
+			super.unregister(conn);
+		}	
+		
 	}
 	
 }

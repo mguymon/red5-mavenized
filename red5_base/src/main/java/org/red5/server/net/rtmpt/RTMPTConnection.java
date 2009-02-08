@@ -3,7 +3,7 @@ package org.red5.server.net.rtmpt;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -22,10 +22,10 @@ package org.red5.server.net.rtmpt;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.mina.common.ByteBuffer;
+import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.servlet.ServletUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A RTMPT client / session.
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 public class RTMPTConnection extends BaseRTMPTConnection {
 
-	private static final Logger log = LoggerFactory
+	private static final Logger log = Red5LoggerFactory
 			.getLogger(RTMPTConnection.class);
 
 	/**
@@ -106,8 +106,7 @@ public class RTMPTConnection extends BaseRTMPTConnection {
 	/**
 	 * Setter for servlet request.
 	 * 
-	 * @param request
-	 *            Servlet request
+	 * @param request Servlet request
 	 */
 	public void setServletRequest(HttpServletRequest request) {
 		host = request.getLocalName();

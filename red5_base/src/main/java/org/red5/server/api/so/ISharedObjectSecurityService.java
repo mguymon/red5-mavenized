@@ -3,7 +3,7 @@ package org.red5.server.api.so;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -39,16 +39,14 @@ public interface ISharedObjectSecurityService extends IScopeService {
 	/**
 	 * Add handler that protects shared objects.
 	 * 
-	 * @param handler
-	 * 			Handler to add.
+	 * @param handler Handler to add.
 	 */
 	public void registerSharedObjectSecurity(ISharedObjectSecurity handler);
 	
 	/**
 	 * Remove handler that protects shared objects.
 	 * 
-	 * @param handler
-	 * 			Handler to remove.
+	 * @param handler Handler to remove.
 	 */
 	public void unregisterSharedObjectSecurity(ISharedObjectSecurity handler);
 	

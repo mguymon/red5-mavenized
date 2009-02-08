@@ -3,7 +3,7 @@ package org.red5.io.object;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -39,9 +39,10 @@ public class Deserializer {
 	/**
 	 * Deserializes the input parameter and returns an Object
 	 * which must then be cast to a core data type
-	 * @param in
-	 * @param target
-     * @return Object
+	 * @param <T> type
+	 * @param in input
+	 * @param target target
+     * @return Object object
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T deserialize(Input in, Type target) {
@@ -103,9 +104,9 @@ public class Deserializer {
 	/**
 	 * Post processes the result
 	 * TODO Extension Point
-     * @param result
-     * @param target
-     * @return
+     * @param result result
+     * @param target target
+     * @return object
      */
 	protected Object postProcessExtension(Object result, Type target) {
 		// does nothing at the moment, but will later!

@@ -3,7 +3,7 @@ package org.red5.io.flv.impl;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -122,7 +122,7 @@ public class FLVWriter implements ITagWriter {
 	 * Creates writer implementation with given file output stream and last tag
 	 *
 	 * @param fos               File output stream
-     * @param lastTag           Last tag
+     * @param append            true if append to existing file
 	 */
 	public FLVWriter(FileOutputStream fos, boolean append) {
 		this.fos = fos;
@@ -136,7 +136,7 @@ public class FLVWriter implements ITagWriter {
      * FLV.java uses this constructor so we have access to the file object
 	 *
 	 * @param file              File output stream
-     * @param lastTag           Last tag
+     * @param append            true if append to existing file
 	 */
 	public FLVWriter(File file, boolean append) {
 		this.append = append;

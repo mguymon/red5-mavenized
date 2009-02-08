@@ -3,7 +3,7 @@ package org.red5.io.amf3;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -61,7 +61,11 @@ public class Input extends org.red5.io.amf.Input implements org.red5.io.object.I
 		/** Names of the attributes of the class. */
 		protected List<String> attributeNames;
 		
-		/** Create new informations about a class. */
+		/** Create new informations about a class. 
+		 * @param className class name
+		 * @param type type
+		 * @param attributeNames attributes
+		 */
 		public ClassReference(String className, int type, List<String> attributeNames) {
 			this.className = className;
 			this.type = type;
@@ -158,8 +162,8 @@ public class Input extends org.red5.io.amf.Input implements org.red5.io.object.I
 	/**
 	 * Creates Input object for AMF3 from byte buffer and initializes references
 	 * from passed RefStorage
-	 * @param buf
-	 * @param refStorage
+	 * @param buf buffer
+	 * @param refStorage ref storage
 	 */
 	public Input(ByteBuffer buf, RefStorage refStorage) {
     	super(buf);
@@ -301,7 +305,7 @@ public class Input extends org.red5.io.amf.Input implements org.red5.io.object.I
 			v = readAMF3Integer();
 		}
 
-        if (target instanceof Class) {
+        if (target instanceof Class && Number.class.isAssignableFrom((Class<?>) target)) {
             Class cls = (Class) target;
             if (!cls.isAssignableFrom(v.getClass())) v = (Number) convertUtilsBean.convert(v.toString(), cls);
         }

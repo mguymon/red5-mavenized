@@ -3,7 +3,7 @@ package org.red5.server.api.so;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -78,10 +78,8 @@ public interface ISharedObjectBase extends ISharedObjectHandlerProvider,
 	/**
 	 * Send a message to a handler of the shared object.
 	 * 
-	 * @param handler
-	 *            the name of the handler to call
-	 * @param arguments
-	 *            a list of objects that should be passed as arguments to the
+	 * @param handler the name of the handler to call
+	 * @param arguments a list of objects that should be passed as arguments to the
 	 *            handler
 	 */
 	public void sendMessage(String handler, List<?> arguments);
@@ -108,16 +106,14 @@ public interface ISharedObjectBase extends ISharedObjectHandlerProvider,
 	/**
 	 * Register object that will be notified about update events.
 	 * 
-	 * @param listener
-	 * 				the object to notify
+	 * @param listener the object to notify
 	 */
 	public void addSharedObjectListener(ISharedObjectListener listener);
 
 	/**
 	 * Unregister object to not longer receive update events.
 	 *  
-	 * @param listener
-	 * 				the object to unregister
+	 * @param listener the object to unregister
 	 */
 	public void removeSharedObjectListener(ISharedObjectListener listener);
 

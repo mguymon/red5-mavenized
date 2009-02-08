@@ -3,7 +3,7 @@ package org.red5.server;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -37,10 +37,8 @@ public class GlobalScope extends Scope implements IGlobalScope {
 
 	/**
 	 * 
-	 * @param persistenceClass
-	 *            Persistent class name
-	 * @throws Exception
-	 *             Exception
+	 * @param persistenceClass Persistent class name
+	 * @throws Exception Exception
 	 */
 	@Override
 	public void setPersistenceClass(String persistenceClass) throws Exception {
@@ -73,8 +71,7 @@ public class GlobalScope extends Scope implements IGlobalScope {
 	/**
 	 * Setter for server
 	 * 
-	 * @param server
-	 *            Server
+	 * @param server Server
 	 */
 	public void setServer(IServer server) {
 		this.server = server;

@@ -3,7 +3,7 @@ package org.red5.server.service;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -40,6 +40,7 @@ import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.LoaderMBean;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.Red5;
+import org.red5.server.api.service.ServiceUtils;
 import org.red5.server.jmx.JMXFactory;
 import org.red5.server.util.FileUtil;
 import org.slf4j.Logger;
@@ -51,7 +52,7 @@ import org.slf4j.Logger;
  * @author Paul Gregoire (mondain@gmail.com)
  * @author Dominick Accattato (daccattato@gmail.com)
  */
-public class Installer {
+public final class Installer {
 
 	private static Logger log = Red5LoggerFactory.getLogger(Installer.class);
 	
@@ -73,7 +74,7 @@ public class Installer {
 	
 	/**
 	 * Returns the LoaderMBean.
-	 * @return
+	 * @return LoaderMBean
 	 */
 	public LoaderMBean getLoader() {
 		MBeanServer mbs = JMXFactory.getMBeanServer();
@@ -93,10 +94,9 @@ public class Installer {
 	/**
 	 * Returns a Map containing all of the application wars in the snapshot repository.
 	 * 
-	 * @return
+	 * @return async message
 	 */
 	public AsyncMessage getApplicationList() {
-		//ArrayCollection<String> list = new ArrayCollection<String>();
 		AcknowledgeMessage result = new AcknowledgeMessage();
 		
 		// create a singular HttpClient object
@@ -112,15 +112,21 @@ public class Installer {
 		method.setFollowRedirects(true);
 		// execute the method
 		try {
+			IConnection conn = Red5.getConnectionLocal();
 			int code = client.executeMethod(method);
 			log.debug("HTTP response code: {}", code);
 			String xml = method.getResponseBodyAsString();
-			log.debug("Response: {}", xml);
+			log.trace("Response: {}", xml);
             //prepare response for flex			
 			result.body = xml;
-			result.clientId = Red5.getConnectionLocal().getClient().getId();
+			result.clientId = conn.getClient().getId();
 			result.messageId = UUID.randomUUID().toString();
 			result.timestamp = System.currentTimeMillis();
+			//send the servers java version so the correct apps are installed
+			String javaVersion = System.getProperty("java.version");
+			if (!ServiceUtils.invokeOnConnection(conn, "onJavaVersion", new Object[] { javaVersion })) {
+				log.warn("Client call to onJavaVersion failed");
+			}							
 		} catch (HttpException he) {
 			log.error("Http error connecting to {}", applicationRepositoryUrl, he);
 		} catch (IOException ioe) {
@@ -137,8 +143,8 @@ public class Installer {
 	/**
 	 * Installs a given application.
 	 * 
-	 * @param applicationWarName
-	 * @return
+	 * @param applicationWarName app war name
+	 * @return true if installed; false otherwise
 	 */
 	public boolean install(String applicationWarName) {
 		IConnection conn = Red5.getConnectionLocal();
@@ -166,7 +172,7 @@ public class Installer {
 				log.warn("Application destination is not a directory");
 			}
 
-			org.red5.server.api.service.ServiceUtils.invokeOnConnection(conn, "onAlert", new Object[]{String.format("Application %s already installed, please un-install before attempting another install", application)});			
+			ServiceUtils.invokeOnConnection(conn, "onAlert", new Object[]{String.format("Application %s already installed, please un-install before attempting another install", application)});			
 		} else {
 			//use the system temp directory for moving files around
 			String srcDir = System.getProperty("java.io.tmpdir");
@@ -253,7 +259,7 @@ public class Installer {
     			}	
 			}			
 
-			org.red5.server.api.service.ServiceUtils.invokeOnConnection(conn, "onAlert", new Object[]{String.format("Application %s was %s", application, (result ? "installed" : "not installed"))});
+			ServiceUtils.invokeOnConnection(conn, "onAlert", new Object[]{String.format("Application %s was %s", application, (result ? "installed" : "not installed"))});
 		
 		}
 		appDir = null;
@@ -264,11 +270,11 @@ public class Installer {
 	/**
 	 * Un-installs a given application.
 	 * 
-	 * @param applicationName
-	 * @return
+	 * @param applicationName name to uninstall
+	 * @return true if uninstalled; else false
 	 */
 	public boolean uninstall(String applicationName) {
-		org.red5.server.api.service.ServiceUtils.invokeOnConnection(Red5.getConnectionLocal(), "onAlert", new Object[]{"Uninstall function not available"});
+		ServiceUtils.invokeOnConnection(Red5.getConnectionLocal(), "onAlert", new Object[]{"Uninstall function not available"});
 
 		return false;
 	}	

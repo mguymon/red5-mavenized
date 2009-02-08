@@ -5,7 +5,7 @@ import org.red5.server.api.IConnection;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -33,14 +33,14 @@ public interface IClientSharedObject extends ISharedObjectBase {
 	/**
 	 * Connect the shared object using the passed connection.
 	 * 
-	 * @param conn
+	 * @param conn connect to connect to
 	 */
 	public void connect(IConnection conn);
 	
 	/**
 	 * Check if the shared object is connected to the server.
 	 * 
-	 * @return
+	 * @return is connected
 	 */
 	public boolean isConnected();
 	

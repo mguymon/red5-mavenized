@@ -5,7 +5,7 @@ import java.lang.ref.WeakReference;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -18,18 +18,18 @@ import java.lang.ref.WeakReference;
  * 
  * You should have received a copy of the GNU Lesser General Public License along 
  * with this library; if not, write to the Free Software Foundation, Inc., 
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA  
  */
 
 /**
- * Utility class for accessing Red5 API objects.
- *    
+ * Utility class for accessing Red5 API objects. 
+ * 
  * This class uses a thread local, and will be setup by the service invoker.
  * 
  * The code below shows various uses. 
  * <p>
- * <code> 
- * IConnection conn = Red5.getConnectionLocal();<br /> 
+ * <code>
+ * IConnection conn = Red5.getConnectionLocal();<br />
  * Red5 r5 = new Red5();<br />
  * IScope scope = r5.getScope();<br />
  * conn = r5.getConnection();<br /> 
@@ -40,7 +40,7 @@ import java.lang.ref.WeakReference;
  *   
  * @author The Red5 Project (red5@osflash.org) 
  * @author Luke Hubbard (luke@codegent.com)  
- * @author Paul Gregoire (mondain@gmail.com)   
+ * @author Paul Gregoire (mondain@gmail.com)
  */
 public final class Red5 implements Red5MBean {
 
@@ -59,7 +59,7 @@ public final class Red5 implements Red5MBean {
     /**
      * Current server version with revision
      */
-    public static final String VERSION = "Red5 Server 0.8.0-RC1 $Revision: 3368 $";
+    public static final String VERSION = "Red5 Server 0.8.0-RC2 $Revision: 3484 $";
 
     /**
      * Current server version for fmsVer requests

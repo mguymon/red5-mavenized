@@ -3,7 +3,7 @@ package org.red5.server.api.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -30,28 +30,28 @@ public interface IPlayItem {
 	 * Get name of item.
 	 * The VOD or Live stream provider is found according
 	 * to this name.
-	 * @return
+	 * @return the name
 	 */
 	String getName();
 
 	/**
 	 * Start time in milliseconds.
 	 * 
-	 * @return
+	 * @return start time
 	 */
 	long getStart();
 
 	/**
 	 * Play length in milliseconds.
 	 * 
-	 * @return
+	 * @return length in milliseconds
 	 */
 	long getLength();
 
 	/**
 	 * Size in bytes.
 	 * 
-	 * @return
+	 * @return size in bytes
 	 */
 	long getSize();
 	
@@ -61,7 +61,7 @@ public interface IPlayItem {
 	 * This object overrides the default algorithm for finding
 	 * the appropriate VOD or Live stream provider according to
 	 * the item name.
-	 * @return
+	 * @return message input
 	 */
 	IMessageInput getMessageInput();
 }

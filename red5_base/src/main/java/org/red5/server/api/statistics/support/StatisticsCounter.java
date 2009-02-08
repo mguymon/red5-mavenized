@@ -3,7 +3,7 @@ package org.red5.server.api.statistics.support;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -57,7 +57,7 @@ public class StatisticsCounter {
 	/**
 	 * Get current number.
 	 * 
-	 * @return
+	 * @return current number
 	 */
 	public int getCurrent() {
 		return current.intValue();
@@ -66,7 +66,7 @@ public class StatisticsCounter {
 	/**
 	 * Get total number.
 	 * 
-	 * @return
+	 * @return total
 	 */
 	public int getTotal() {
 		return total.intValue();
@@ -75,7 +75,7 @@ public class StatisticsCounter {
 	/**
 	 * Get maximum number.
 	 * 
-	 * @return
+	 * @return max
 	 */
 	public int getMax() {
 		return max.intValue();

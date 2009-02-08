@@ -3,7 +3,7 @@ package org.red5.server.net.protocol;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -22,14 +22,14 @@ package org.red5.server.net.protocol;
 public class ProtocolException extends RuntimeException {
 
 	/**
-	 * Base exception for all protocol exeptions.
+	 * Base exception for all protocol exceptions.
 	 */
 	private static final long serialVersionUID = -5380844081848027068L;
 
     /**
      * Create protocol exception with given message.
 	 *
-     * @param message
+     * @param message message
      */
     public ProtocolException(String message) {
 		super(message);
@@ -38,8 +38,8 @@ public class ProtocolException extends RuntimeException {
     /**
      * Create protocol exception with given message and cause.
 	 *
-     * @param message
-     * @param cause
+     * @param message message
+     * @param cause cause
      */
     public ProtocolException(String message, Throwable cause) {
     	super(message, cause);

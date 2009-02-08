@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.codec;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -375,6 +375,7 @@ public class RTMP extends ProtocolState {
      * Store the handshake sent to the client.
      * 
      * @param data    Handshake data
+     * @param start where handshake data starts in data
      * @param length  Length of handshake to store
      */
     public void setHandshake(ByteBuffer data, int start, int length) {
@@ -388,9 +389,10 @@ public class RTMP extends ProtocolState {
     /**
      * Check if the handshake reply received from a client contains valid data.
      * 
-     * @param data
-     * @param length
-     * @return
+     * @param data data
+     * @param start where handshake data starts in data
+     * @param length length
+     * @return treu on success; false otherwise
      */
     public boolean validateHandshakeReply(ByteBuffer data, int start, int length) {
     	if (handshake == null || length != handshake.length) {

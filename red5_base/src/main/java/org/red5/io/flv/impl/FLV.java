@@ -3,7 +3,7 @@ package org.red5.io.flv.impl;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -72,8 +72,7 @@ public class FLV implements IFLV {
 	/**
 	 * Create FLV from given file source
 	 * 
-	 * @param file
-	 *            File source
+	 * @param file File source
 	 */
 	public FLV(File file) {
 		this(file, false);
@@ -83,10 +82,8 @@ public class FLV implements IFLV {
 	 * Create FLV from given file source and with specified metadata generation
 	 * option
 	 * 
-	 * @param file
-	 *            File source
-	 * @param generateMetadata
-	 *            Metadata generation option
+	 * @param file File source
+	 * @param generateMetadata Metadata generation option
 	 */
 	public FLV(File file, boolean generateMetadata) {
 		this.file = file;
@@ -116,8 +113,7 @@ public class FLV implements IFLV {
 	/**
 	 * Sets the cache implementation to be used.
 	 * 
-	 * @param cache
-	 *            Cache store
+	 * @param cache Cache store
 	 */
 	public void setCache(ICacheStore cache) {
 		FLV.cache = cache;

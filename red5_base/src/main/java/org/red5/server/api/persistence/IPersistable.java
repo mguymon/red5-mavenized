@@ -3,7 +3,7 @@ package org.red5.server.api.persistence;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -60,8 +60,7 @@ public interface IPersistable {
 	/**
 	 * Set the persistent flag of the object.
 	 * 
-	 * @param persistent
-	 * 		<code>true</code> if object is persistent, <code>false</code> otherwise
+	 * @param persistent <code>true</code> if object is persistent, <code>false</code> otherwise
 	 */
 	public void setPersistent(boolean persistent);
 
@@ -75,8 +74,7 @@ public interface IPersistable {
 	/**
 	 * Set the name of the persistent object.
 	 * 
-	 * @param name
-	 * 		New object name
+	 * @param name New object name
 	 */
 	public void setName(String name);
 
@@ -97,8 +95,7 @@ public interface IPersistable {
 	/**
 	 * Set the path of the persistent object.
 	 * 
-	 * @param path
-	 * 		New persisted object path
+	 * @param path New persisted object path
 	 */
 	public void setPath(String path);
 

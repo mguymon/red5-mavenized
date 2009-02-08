@@ -2,8 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:lang="http://www.springframework.org/schema/lang"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd                            
-	http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd                            
+	http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.5.xsd">
 	<!-- This context holds all the networking: mina -->
 
 	<bean id="customEditorConfigurer"
@@ -18,17 +18,16 @@
 		</property>
 	</bean>
 	
-	<bean id="placeholderConfig"
-		class="org.red5.spring.ExtendedPropertyPlaceholderConfigurer">
+	<bean id="placeholderConfig" class="org.red5.spring.ExtendedPropertyPlaceholderConfigurer">
 		<property name="wildcardLocations">
 			<list>
 				<value>classpath:/red5.properties</value>
-				<value>classpath*:/red5-*.properties</value>
+				<value>classpath*:/red5-*.properties
+				</value>
 			</list>
 		</property>
 	</bean>
-
-
+	
 	<!-- RTMP Handler -->
 	<bean id="rtmpHandler"
 		class="org.red5.server.net.rtmp.EdgeRTMPHandler">
@@ -120,4 +119,3 @@
 	</bean>
 	-->
 </beans>
-
