@@ -1,11 +1,9 @@
 h2. Red5 - Mavenized
 
-A "Mavenization":http://maven.apache.org of the "Red5 Flash Server":http://osflash.org/red5 from *trunk rev 3371*. Parts of Red5 have been separated into logical modules, which use Maven to manage dependencies:
+A "Mavenization":http://maven.apache.org of the "Red5 Flash Server":http://osflash.org/red5 from *0.8 RC2*. Parts of Red5 have been separated into logical modules, which use Maven to manage dependencies:
 
   * red5-base: contains all the core classes and resources
-  * red5-jetty: contains classes and resources to run Red5 in a standalone Jetty server
   * red5-jmx: contains classes and resources for JMX support
-  * red5-scripting: contains classes and resources for scripting support
   * red5-tomcat: contains classes and resources to run Red5 in a standalone Tomcat server
   * red5-webapp-archetype: the Maven archetype that contains the defaults for making a Red5 enabled war
 
