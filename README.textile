@@ -10,26 +10,4 @@ A "Mavenization":http://maven.apache.org of the "Red5 Flash Server":http://osfla
 h3. Deviations from Red5 trunk
 
 "http://wiki.github.com/mguymon/red5-mavenized/home":http://wiki.github.com/mguymon/red5-mavenized/home
-  
-h3. Where can I find a Maven repository with all this fun stuff?
-
-Presently, this only exists on the Slackworks Snapshot repository, which can be used by adding the following
-to your maven settings.xml
-
-<pre>
-	<code>
-		<repositories>
-		    <repository>
-		        <id>slackworks.snapshot</id>
-		        <name>Slackworks Snapshot Repo</name>
-		        <url>http://sprocket.slackworks.com/m2-snapshot</url>
-		        <releases>
-		            <enabled>false</enabled>
-		        </releases>
-		        <snapshots>
-		            <enabled>true</enabled>
-		        </snapshots>
-		    </repository>
-		</repositories>
-	</code>
-</pre>
+ =
